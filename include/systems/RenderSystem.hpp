@@ -1,5 +1,5 @@
 /*
- * main.cpp
+ * RenderSystem.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,82 +24,34 @@
  * SOFTWARE.
  */
 
-#include <string>
-#include <utility>
+#ifndef INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_
+#define INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_
 
-#include <Ashley/AshleyCore.hpp>
+#include <typeinfo>
 
-#include "libtcod.hpp"
+#include <Ashley/systems/IteratingSystem.hpp>
+#include <Ashley/core/Entity.hpp>
+#include <Ashley/core/Family.hpp>
 
-#include "RGL.hpp"
+#include "components/Renderable.hpp"
+#include "components/Position.hpp"
 
-int main() {
-	const auto rgl = std::make_unique<rgl::RGL>("rgl :: woo");
+namespace rgl {
 
-	rgl->init();
+class RenderSystem: public ashley::IteratingSystem {
+private:
+	TCODConsole * const console;
 
-	while (!TCODConsole::isWindowClosed()) {
-		TCOD_key_t key;
-		TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS, &key, nullptr);
-
-		if (key.vk == TCODK_CHAR) {
-			switch (key.c) {
-			case 'w':
-			case 'W': {
-				key.vk = TCODK_UP;
-				break;
-			}
-
-			case 's':
-			case 'S': {
-				key.vk = TCODK_DOWN;
-				break;
-			}
-
-			case 'a':
-			case 'A': {
-				key.vk = TCODK_LEFT;
-				break;
-			}
-
-			case 'd':
-			case 'D': {
-				key.vk = TCODK_RIGHT;
-				break;
-			}
-
-			default: {
-				break;
-			}
-			}
-		}
-
-		switch (key.vk) {
-		case TCODK_UP: {
-			//pos.position.y--;
-			break;
-		}
-
-		case TCODK_DOWN: {
-			//pos.position.y++;
-			break;
-		}
-
-		case TCODK_LEFT: {
-			//pos.position.x--;
-			break;
-		}
-
-		case TCODK_RIGHT: {
-			//pos.position.x++;
-			break;
-		}
-
-		default:
-			break;
-		}
-
-		rgl->update(0.1f);
+public:
+	explicit RenderSystem(TCODConsole * console) :
+			IteratingSystem(ashley::Family::getFor( { typeid(Renderable), typeid(Position) })), console { console } {
 	}
-	return 0;
+
+	virtual void update(float deltaTime) override;
+
+	virtual void processEntity(ashley::Entity * const &entity, float deltaTime) override;
+};
+
 }
+
+#endif /* INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_ */

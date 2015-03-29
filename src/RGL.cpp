@@ -1,5 +1,5 @@
 /*
- * Color.hpp
+ * RGL.cpp
  *
  * The MIT License (MIT)
  *
@@ -24,26 +24,25 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_COMPONENTS_COLOR_HPP_
-#define INCLUDE_COMPONENTS_COLOR_HPP_
+#include <Ashley/AshleyCore.hpp>
 
-#include <Ashley/core/Component.hpp>
+#include "libtcod.hpp"
 
-namespace rgl {
+#include "RGL.hpp"
+#include "components/Position.hpp"
+#include "components/Renderable.hpp"
+#include "systems/RenderSystem.hpp"
 
-class Color: public ashley::Component {
-public:
-	explicit Color() :
-			Color { TCODColor::white } {
-	}
+void rgl::RGL::init() {
+	TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_GLSL);
 
-	explicit Color(const TCODColor &color) :
-			color { color } {
-	}
+	player = engine.addEntity();
+	player->add<Position>(40, 25);
+	player->add<Renderable>('@', TCODColor::red);
 
-	TCODColor color;
-};
-
+	renderSystem = engine.addSystem<RenderSystem>(TCODConsole::root);
 }
 
-#endif /* INCLUDE_COMPONENTS_COLOR_HPP_ */
+void rgl::RGL::update(float deltaTime) {
+	engine.update(deltaTime);
+}

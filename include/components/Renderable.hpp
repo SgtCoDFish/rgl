@@ -1,5 +1,5 @@
 /*
- * main.cpp
+ * Color.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,82 +24,29 @@
  * SOFTWARE.
  */
 
-#include <string>
-#include <utility>
+#ifndef INCLUDE_COMPONENTS_RENDERABLE_HPP_
+#define INCLUDE_COMPONENTS_RENDERABLE_HPP_
 
-#include <Ashley/AshleyCore.hpp>
+#include <Ashley/core/Component.hpp>
 
 #include "libtcod.hpp"
 
-#include "RGL.hpp"
+namespace rgl {
 
-int main() {
-	const auto rgl = std::make_unique<rgl::RGL>("rgl :: woo");
-
-	rgl->init();
-
-	while (!TCODConsole::isWindowClosed()) {
-		TCOD_key_t key;
-		TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS, &key, nullptr);
-
-		if (key.vk == TCODK_CHAR) {
-			switch (key.c) {
-			case 'w':
-			case 'W': {
-				key.vk = TCODK_UP;
-				break;
-			}
-
-			case 's':
-			case 'S': {
-				key.vk = TCODK_DOWN;
-				break;
-			}
-
-			case 'a':
-			case 'A': {
-				key.vk = TCODK_LEFT;
-				break;
-			}
-
-			case 'd':
-			case 'D': {
-				key.vk = TCODK_RIGHT;
-				break;
-			}
-
-			default: {
-				break;
-			}
-			}
-		}
-
-		switch (key.vk) {
-		case TCODK_UP: {
-			//pos.position.y--;
-			break;
-		}
-
-		case TCODK_DOWN: {
-			//pos.position.y++;
-			break;
-		}
-
-		case TCODK_LEFT: {
-			//pos.position.x--;
-			break;
-		}
-
-		case TCODK_RIGHT: {
-			//pos.position.x++;
-			break;
-		}
-
-		default:
-			break;
-		}
-
-		rgl->update(0.1f);
+class Renderable: public ashley::Component {
+public:
+	explicit Renderable(char c) :
+			Renderable { c, TCODColor::white } {
 	}
-	return 0;
+
+	explicit Renderable(char c, const TCODColor &color) :
+			c { c }, color { color } {
+	}
+
+	char c;
+	TCODColor color;
+};
+
 }
+
+#endif /* INCLUDE_COMPONENTS_RENDERABLE_HPP_ */
