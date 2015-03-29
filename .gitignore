@@ -1,0 +1,15 @@
+Debug/*
+Debug
+
+Release/*
+Release
+
+include/tcod/*
+include/tcod
+
+.cproject
+.project
+
+lib/*
+lib
+
