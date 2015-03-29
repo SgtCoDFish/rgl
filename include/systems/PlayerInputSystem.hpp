@@ -1,5 +1,5 @@
 /*
- * RGL.cpp
+ * PlayerInputSystem.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,31 +24,33 @@
  * SOFTWARE.
  */
 
-#include <Ashley/AshleyCore.hpp>
+#ifndef __RGL_PLAYER_INPUT_SYSTEM_HPP
+#define __RGL_PLAYER_INPUT_SYSTEM_HPP
 
-#include "libtcod.hpp"
-
-#include "RGL.hpp"
+#include <Ashley/systems/IteratingSystem.hpp>
+#include <Ashley/core/Family.hpp>
 
 #include "components/Position.hpp"
-#include "components/Renderable.hpp"
 #include "components/PlayerInputListener.hpp"
 
-#include "systems/RenderSystem.hpp"
-#include "systems/PlayerInputSystem.hpp"
+namespace rgl {
 
-void rgl::RGL::init() {
-	TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_GLSL);
+class PlayerInputSystem: public ashley::IteratingSystem {
+private:
+	bool upPressed = false, downPressed = false, leftPressed = false, rightPressed = false;
 
-	player = engine.addEntity();
-	player->add<Position>(40, 25);
-	player->add<Renderable>('@', TCODColor::red);
-	player->add<PlayerInputListener>();
+	void resetPressedKeys() {
+		upPressed = downPressed = leftPressed = rightPressed = false;
+	}
+public:
+	explicit PlayerInputSystem() :
+			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(PlayerInputListener) })) {
+	}
 
-	renderSystem = engine.addSystem<RenderSystem>(TCODConsole::root);
-	engine.addSystem<PlayerInputSystem>();
+	void update(float deltaTime) override;
+	virtual void processEntity(ashley::Entity * const &entity, float deltaTime) override;
+};
+
 }
 
-void rgl::RGL::update(float deltaTime) {
-	engine.update(deltaTime);
-}
+#endif //__RGL_PLAYER_INPUT_SYSTEM_HPP

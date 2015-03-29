@@ -1,5 +1,5 @@
 /*
- * RGL.cpp
+ * PlayerInputListener.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,31 +24,16 @@
  * SOFTWARE.
  */
 
-#include <Ashley/AshleyCore.hpp>
+#ifndef INCLUDE_COMPONENTS_PLAYERINPUTLISTENER_HPP_
+#define INCLUDE_COMPONENTS_PLAYERINPUTLISTENER_HPP_
 
-#include "libtcod.hpp"
+#include <Ashley/core/Component.hpp>
 
-#include "RGL.hpp"
+namespace rgl {
 
-#include "components/Position.hpp"
-#include "components/Renderable.hpp"
-#include "components/PlayerInputListener.hpp"
+class PlayerInputListener : public ashley::Component {
+};
 
-#include "systems/RenderSystem.hpp"
-#include "systems/PlayerInputSystem.hpp"
-
-void rgl::RGL::init() {
-	TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_GLSL);
-
-	player = engine.addEntity();
-	player->add<Position>(40, 25);
-	player->add<Renderable>('@', TCODColor::red);
-	player->add<PlayerInputListener>();
-
-	renderSystem = engine.addSystem<RenderSystem>(TCODConsole::root);
-	engine.addSystem<PlayerInputSystem>();
 }
 
-void rgl::RGL::update(float deltaTime) {
-	engine.update(deltaTime);
-}
+#endif /* INCLUDE_COMPONENTS_PLAYERINPUTLISTENER_HPP_ */
