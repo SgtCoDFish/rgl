@@ -31,7 +31,10 @@
 
 #include <Ashley/core/Engine.hpp>
 
+#include "systems/MapRenderSystem.hpp"
 #include "systems/RenderSystem.hpp"
+
+#include "Map.hpp"
 
 namespace rgl {
 
@@ -41,8 +44,11 @@ private:
 
 	ashley::Engine engine;
 
-	ashley::Entity * player;
-	RenderSystem * renderSystem;
+	ashley::Entity *player = nullptr, *mapComponent = nullptr;
+	MapRenderSystem * mapRenderSystem = nullptr;
+	RenderSystem * renderSystem = nullptr;
+
+	Map map;
 
 public:
 	static const int CONSOLE_WIDTH = 80;
@@ -50,8 +56,8 @@ public:
 
 	explicit RGL(const std::string &windowTitle) :
 			windowTitle { windowTitle }, //
-			player { nullptr }, //
-			renderSystem { nullptr } {
+			engine { }, //
+			map(CONSOLE_WIDTH, CONSOLE_HEIGHT) {
 	}
 
 	void init();

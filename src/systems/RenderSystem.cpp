@@ -28,14 +28,6 @@
 
 #include "systems/RenderSystem.hpp"
 
-void rgl::RenderSystem::update(float deltaTime) {
-	console->clear();
-
-	IteratingSystem::update(deltaTime);
-
-	console->flush();
-}
-
 void rgl::RenderSystem::processEntity(ashley::Entity * const &entity, float deltaTime) {
 	const auto pos = ashley::ComponentMapper<Position>::getMapper().get(entity);
 	const auto renderable = ashley::ComponentMapper<Renderable>::getMapper().get(entity);

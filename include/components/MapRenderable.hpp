@@ -1,5 +1,5 @@
 /*
- * RenderSystem.hpp
+ * MapRenderable.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,32 +24,31 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_
-#define INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_
+#ifndef INCLUDE_COMPONENTS_MAPRENDERABLE_HPP_
+#define INCLUDE_COMPONENTS_MAPRENDERABLE_HPP_
 
-#include <typeinfo>
+#include <Ashley/core/Component.hpp>
 
-#include <Ashley/systems/IteratingSystem.hpp>
-#include <Ashley/core/Entity.hpp>
-#include <Ashley/core/Family.hpp>
+#include "tcod/libtcod.hpp"
 
-#include "components/Renderable.hpp"
-#include "components/Position.hpp"
+#include "Map.hpp"
 
 namespace rgl {
 
-class RenderSystem: public ashley::IteratingSystem {
-private:
-	TCODConsole * const console;
-
+class MapRenderable: public ashley::Component {
 public:
-	explicit RenderSystem(TCODConsole * console) :
-			IteratingSystem(ashley::Family::getFor( { typeid(Renderable), typeid(Position) }), 500000u), console { console } {
-	}
+	const Map &map;
 
-	virtual void processEntity(ashley::Entity * const &entity, float deltaTime) override;
+	const TCODColor wallColor;
+	const TCODColor groundColor;
+
+	explicit MapRenderable(const Map &map) : MapRenderable(map, TCODColor::grey, TCODColor::black) {}
+
+	explicit MapRenderable(const Map &map, const TCODColor &wallColor, const TCODColor &groundColor) :
+			map(map), wallColor(wallColor), groundColor(groundColor) {
+	}
 };
 
 }
 
-#endif /* INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_ */
+#endif /* INCLUDE_COMPONENTS_MAPRENDERABLE_HPP_ */

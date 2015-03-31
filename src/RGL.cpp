@@ -33,22 +33,33 @@
 #include "components/Position.hpp"
 #include "components/Renderable.hpp"
 #include "components/PlayerInputListener.hpp"
+#include "components/MapRenderable.hpp"
 
+#include "systems/MapRenderSystem.hpp"
 #include "systems/RenderSystem.hpp"
 #include "systems/PlayerInputSystem.hpp"
 
 void rgl::RGL::init() {
 	TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_GLSL);
 
+	const Room room = map.getRandomRoom();
+
 	player = engine.addEntity();
-	player->add<Position>(40, 25);
+	player->add<Position>(room.x1 + (room.w / 2), room.y1 + (room.h / 2));
 	player->add<Renderable>('@', TCODColor::red);
 	player->add<PlayerInputListener>();
 
+	mapComponent = engine.addEntity();
+	mapComponent->add<Position>(0, 0);
+	mapComponent->add<MapRenderable>(map);
+
+	engine.addSystem<PlayerInputSystem>(&map);
+	mapRenderSystem = engine.addSystem<MapRenderSystem>(TCODConsole::root);
 	renderSystem = engine.addSystem<RenderSystem>(TCODConsole::root);
-	engine.addSystem<PlayerInputSystem>();
 }
 
 void rgl::RGL::update(float deltaTime) {
+	TCODConsole::root->clear();
 	engine.update(deltaTime);
+	TCODConsole::root->flush();
 }

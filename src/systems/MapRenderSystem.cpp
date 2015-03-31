@@ -1,5 +1,5 @@
 /*
- * RenderSystem.hpp
+ * MapRenderSystem.cpp
  *
  * The MIT License (MIT)
  *
@@ -23,33 +23,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+#include <Ashley/AshleyCore.hpp>
 
-#ifndef INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_
-#define INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_
+#include "systems/MapRenderSystem.hpp"
 
-#include <typeinfo>
+void rgl::MapRenderSystem::processEntity(ashley::Entity * const &entity, float deltaTime) {
+	const auto mapComponent = ashley::ComponentMapper<MapRenderable>::getMapper().get(entity);
 
-#include <Ashley/systems/IteratingSystem.hpp>
-#include <Ashley/core/Entity.hpp>
-#include <Ashley/core/Family.hpp>
+	for (int y = 0; y < mapComponent->map.getHeight(); ++y) {
+		for (int x = 0; x < mapComponent->map.getWidth(); ++x) {
+			const auto tile = mapComponent->map.getTileAt(x, y);
 
-#include "components/Renderable.hpp"
-#include "components/Position.hpp"
-
-namespace rgl {
-
-class RenderSystem: public ashley::IteratingSystem {
-private:
-	TCODConsole * const console;
-
-public:
-	explicit RenderSystem(TCODConsole * console) :
-			IteratingSystem(ashley::Family::getFor( { typeid(Renderable), typeid(Position) }), 500000u), console { console } {
+			if (tile != nullptr) {
+				console->setCharBackground(x, y, tile->solid ? mapComponent->wallColor : mapComponent->groundColor);
+			}
+		}
 	}
-
-	virtual void processEntity(ashley::Entity * const &entity, float deltaTime) override;
-};
-
 }
-
-#endif /* INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_ */

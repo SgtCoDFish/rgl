@@ -1,5 +1,5 @@
 /*
- * RenderSystem.hpp
+ * MapRenderSystem.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,32 +24,28 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_
-#define INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_
-
-#include <typeinfo>
+#ifndef INCLUDE_SYSTEMS_MAPRENDERSYSTEM_HPP_
+#define INCLUDE_SYSTEMS_MAPRENDERSYSTEM_HPP_
 
 #include <Ashley/systems/IteratingSystem.hpp>
-#include <Ashley/core/Entity.hpp>
-#include <Ashley/core/Family.hpp>
+#include <components/MapRenderable.hpp>
 
-#include "components/Renderable.hpp"
 #include "components/Position.hpp"
 
 namespace rgl {
 
-class RenderSystem: public ashley::IteratingSystem {
+class MapRenderSystem: public ashley::IteratingSystem {
 private:
-	TCODConsole * const console;
+	TCODConsole * const console = nullptr;
 
 public:
-	explicit RenderSystem(TCODConsole * console) :
-			IteratingSystem(ashley::Family::getFor( { typeid(Renderable), typeid(Position) }), 500000u), console { console } {
+	explicit MapRenderSystem(TCODConsole * console) :
+			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(MapRenderable) }), 250000u), console { console } {
 	}
 
-	virtual void processEntity(ashley::Entity * const &entity, float deltaTime) override;
+	void processEntity(ashley::Entity * const &entity, float deltaTime) override;
 };
 
 }
 
-#endif /* INCLUDE_SYSTEMS_RENDERSYSTEM_HPP_ */
+#endif /* INCLUDE_SYSTEMS_MAPRENDERSYSTEM_HPP_ */

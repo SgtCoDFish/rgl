@@ -35,6 +35,8 @@
 
 namespace rgl {
 
+class Map;
+
 class PlayerInputSystem: public ashley::IteratingSystem {
 private:
 	bool upPressed = false, downPressed = false, leftPressed = false, rightPressed = false;
@@ -42,13 +44,23 @@ private:
 	void resetPressedKeys() {
 		upPressed = downPressed = leftPressed = rightPressed = false;
 	}
+
+	Map *map = nullptr;
 public:
-	explicit PlayerInputSystem() :
-			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(PlayerInputListener) })) {
+	explicit PlayerInputSystem(Map *map) :
+			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(PlayerInputListener) }), 1000u), map(map) {
 	}
 
 	void update(float deltaTime) override;
 	virtual void processEntity(ashley::Entity * const &entity, float deltaTime) override;
+
+	void setMap(Map *map) {
+		this->map = map;
+	}
+
+	Map *getMap() const {
+		return map;
+	}
 };
 
 }
