@@ -32,44 +32,104 @@
 #include <libtcod.hpp>
 
 #include "components/Position.hpp"
+#include "components/PlayerInputListener.hpp"
 #include "components/Inventory.hpp"
+#include "components/Interactible.hpp"
 
 #include "systems/PlayerInputSystem.hpp"
 
 #include "RGL.hpp"
 #include "Map.hpp"
 
+#include "easylogging++.h"
+
 void rgl::PlayerInputSystem::processEntity(ashley::Entity * const &entity, float deltaTime) {
+	const auto inputComponent = ashley::ComponentMapper<PlayerInputListener>::getMapper().get(entity);
+
+	switch (inputComponent->state) {
+	case PlayerInputState::NORMAL: {
+		processNormalState(entity, deltaTime, inputComponent);
+		break;
+	}
+
+	case PlayerInputState::TARGETTING: {
+		processTargettingState(entity, deltaTime, inputComponent);
+		break;
+	}
+
+	default: {
+		RGLL->debug("Unhandled case in PlayerInputSystem switch.");
+		break;
+	}
+}
+}
+
+void rgl::PlayerInputSystem::processNormalState(ashley::Entity * const &entity, float deltaTime,
+        PlayerInputListener * const listener) {
 	const auto pos = ashley::ComponentMapper<Position>::getMapper().get(entity);
 	glm::ivec2 target(pos->position);
 
-	if (upPressed) {
-		target.y--;
+	if (spacePressed) {
+		listener->state = PlayerInputState::TARGETTING;
+		return;
+	} else if (upPressed) {
+		--target.y;
 	} else if (downPressed) {
-		target.y++;
+		++target.y;
 	} else if (leftPressed) {
-		target.x--;
+		--target.x;
 	} else if (rightPressed) {
-		target.x++;
+		++target.x;
 	}
 
 	// check if target is clear
 	if (target.x >= 0 && target.x < map->getWidth() && target.y >= 0 && target.y < map->getHeight()) {
 		const auto targetTile = map->getTileAt(target.x, target.y);
 
-		if (targetTile != nullptr) {
-			if (!targetTile->solid) {
-				pos->position = target;
-			}
+		if (targetTile != nullptr && !targetTile->solid) {
+			pos->position = target;
+		}
+	}
+}
 
-			if(!targetTile->contains.empty()) {
-				const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(targetTile->contains[0]);
+void rgl::PlayerInputSystem::processTargettingState(ashley::Entity * const &entity, float deltaTime,
+        PlayerInputListener * const listener) {
+	const auto pos = ashley::ComponentMapper<Position>::getMapper().get(entity);
+	glm::ivec2 target(pos->position);
+	bool interactionDone = false;
 
-				if(inventory != nullptr && !inventory->contents.empty()) {
-					std::printf("Chest contains %s\n", inventory->contents[0].name.c_str());
+	if (spacePressed) {
+		interactionDone = true;
+	} else if (upPressed) {
+		interactionDone = true;
+		--target.y;
+	} else if (downPressed) {
+		interactionDone = true;
+		++target.y;
+	} else if (leftPressed) {
+		interactionDone = true;
+		--target.x;
+	} else if (rightPressed) {
+		interactionDone = true;
+		++target.x;
+	}
+
+	const auto targetTile = map->getTileAt(target.x, target.y);
+
+	if (targetTile != nullptr) {
+		if (!targetTile->contains.empty()) {
+			for (const auto &i : targetTile->contains) {
+				const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(i);
+
+				for(const auto &item : inventory->contents) {
+					RGLL->debug("(%v, %v) contains %v.", target.x, target.y, item.name);
 				}
 			}
 		}
+	}
+
+	if(interactionDone) {
+		listener->state = PlayerInputState::NORMAL;
 	}
 }
 
@@ -128,6 +188,11 @@ void rgl::PlayerInputSystem::update(float deltaTime) {
 
 		case TCODK_RIGHT: {
 			rightPressed = true;
+			break;
+		}
+
+		case TCODK_SPACE: {
+			spacePressed = true;
 			break;
 		}
 
