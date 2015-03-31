@@ -1,5 +1,5 @@
 /*
- * RGL.hpp
+ * Item.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,51 +24,37 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_RGL_HPP_
-#define INCLUDE_RGL_HPP_
+#ifndef INCLUDE_ITEM_HPP_
+#define INCLUDE_ITEM_HPP_
 
 #include <string>
 
-#include <Ashley/core/Engine.hpp>
-
-#include "systems/MapRenderSystem.hpp"
-#include "systems/RenderSystem.hpp"
-
-#include "Map.hpp"
+#include "Stats.hpp"
 
 namespace rgl {
 
-class RGL {
-private:
-	const std::string windowTitle;
+enum class ItemType {
+	WEAPON, ARMOR, CONSUMABLE, CRAFTING
+};
 
-	ashley::Engine engine;
+enum class CraftingGroup {
+	METAL, MAGIC
+};
 
-	ashley::Entity *player = nullptr, *mapComponent = nullptr;
-	MapRenderSystem * mapRenderSystem = nullptr;
-	RenderSystem * renderSystem = nullptr;
+struct Item {
+	explicit Item(const std::string &name, ItemType type, Stats stats);
+	explicit Item(const std::string &name, ItemType type, CraftingGroup group);
 
-	Map map;
+	std::string name;
 
-public:
-	static const int CONSOLE_WIDTH = 100;
-	static const int CONSOLE_HEIGHT = 55;
-	static const int STATUS_BAR_HEIGHT = 5;
+	ItemType type;
 
-	explicit RGL(const std::string &windowTitle) :
-			windowTitle { windowTitle }, //
-			engine { }, //
-			map(CONSOLE_WIDTH, CONSOLE_HEIGHT - STATUS_BAR_HEIGHT - 1) {
-	}
-
-	void init();
-	void update(float deltaTime);
-
-	ashley::Entity * getPlayer() const {
-		return player;
-	}
+	union {
+		Stats stats; // for weapons, armor and consumables
+		CraftingGroup group; // for crafting
+	};
 };
 
 }
 
-#endif /* INCLUDE_RGL_HPP_ */
+#endif /* INCLUDE_ITEM_HPP_ */

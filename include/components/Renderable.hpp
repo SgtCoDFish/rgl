@@ -1,5 +1,5 @@
 /*
- * Color.hpp
+ * Renderable.hpp
  *
  * The MIT License (MIT)
  *
@@ -39,12 +39,13 @@ public:
 			Renderable { c, TCODColor::white } {
 	}
 
-	explicit Renderable(char c, const TCODColor &color) :
-			c { c }, color { color } {
+	explicit Renderable(char c, const TCODColor &color, bool drawLast = false) :
+			c { c }, color { color }, drawLast { drawLast } {
 	}
 
 	char c;
 	TCODColor color;
+	bool drawLast;
 };
 
 }

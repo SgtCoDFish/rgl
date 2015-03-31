@@ -32,6 +32,7 @@
 #include <libtcod.hpp>
 
 #include "components/Position.hpp"
+#include "components/Inventory.hpp"
 
 #include "systems/PlayerInputSystem.hpp"
 
@@ -53,11 +54,21 @@ void rgl::PlayerInputSystem::processEntity(ashley::Entity * const &entity, float
 	}
 
 	// check if target is clear
-	if (target.x >= 0 && target.x < RGL::CONSOLE_WIDTH && target.y >= 0 && target.y < RGL::CONSOLE_HEIGHT) {
+	if (target.x >= 0 && target.x < map->getWidth() && target.y >= 0 && target.y < map->getHeight()) {
 		const auto targetTile = map->getTileAt(target.x, target.y);
 
-		if (targetTile != nullptr && !targetTile->solid) {
-			pos->position = target;
+		if (targetTile != nullptr) {
+			if (!targetTile->solid) {
+				pos->position = target;
+			}
+
+			if(!targetTile->contains.empty()) {
+				const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(targetTile->contains[0]);
+
+				if(inventory != nullptr && !inventory->contents.empty()) {
+					std::printf("Chest contains %s\n", inventory->contents[0].name.c_str());
+				}
+			}
 		}
 	}
 }

@@ -27,8 +27,14 @@
 #ifndef INCLUDE_MAP_HPP_
 #define INCLUDE_MAP_HPP_
 
+#ifdef DEBUG
+#include <cstdio>
+#endif
+
 #include <memory>
 #include <vector>
+
+#include <Ashley/core/Entity.hpp>
 
 #include "tcod/libtcod.hpp"
 
@@ -36,6 +42,8 @@ namespace rgl {
 
 struct Tile {
 	bool solid = true;
+
+	std::vector<ashley::Entity *> contains;
 };
 
 struct Room {
@@ -46,6 +54,10 @@ struct Room {
 			x1(x1), y1(y1), x2(x2), y2(y2) {
 		w = x2 - x1;
 		h = y2 - y1;
+	}
+
+	inline bool operator==(const Room &other) const {
+		return x1 == other.x1 && y1 == other.y1 && x2 == other.x2 && y2 == other.y2;
 	}
 };
 
@@ -64,9 +76,12 @@ public:
 	explicit Map(int width, int height);
 
 	inline Tile *getTileAt(int x, int y) const {
+#ifdef DEBUG
 		if (x < 0 || x > width || y < 0 || y > height) {
+			std::printf("Invalid coordinates passed to getTileAt: (%d, %d)", x, y);
 			return nullptr;
 		}
+#endif
 
 		return &(tiles[width * y + x]);
 	}
@@ -84,7 +99,7 @@ public:
 	}
 
 	inline Room &getRandomRoom() {
-		return rooms[TCODRandom::getInstance()->getInt(0, rooms.size())];
+		return rooms[TCODRandom::getInstance()->getInt(0, rooms.size()-1)];
 	}
 };
 

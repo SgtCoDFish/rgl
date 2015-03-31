@@ -1,5 +1,5 @@
 /*
- * RGL.hpp
+ * Inventory.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,51 +24,23 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_RGL_HPP_
-#define INCLUDE_RGL_HPP_
+#ifndef INCLUDE_COMPONENTS_INVENTORY_HPP_
+#define INCLUDE_COMPONENTS_INVENTORY_HPP_
 
 #include <string>
+#include <vector>
 
-#include <Ashley/core/Engine.hpp>
+#include <Ashley/core/Component.hpp>
 
-#include "systems/MapRenderSystem.hpp"
-#include "systems/RenderSystem.hpp"
-
-#include "Map.hpp"
+#include "Item.hpp"
 
 namespace rgl {
 
-class RGL {
-private:
-	const std::string windowTitle;
-
-	ashley::Engine engine;
-
-	ashley::Entity *player = nullptr, *mapComponent = nullptr;
-	MapRenderSystem * mapRenderSystem = nullptr;
-	RenderSystem * renderSystem = nullptr;
-
-	Map map;
-
+class Inventory : public ashley::Component {
 public:
-	static const int CONSOLE_WIDTH = 100;
-	static const int CONSOLE_HEIGHT = 55;
-	static const int STATUS_BAR_HEIGHT = 5;
-
-	explicit RGL(const std::string &windowTitle) :
-			windowTitle { windowTitle }, //
-			engine { }, //
-			map(CONSOLE_WIDTH, CONSOLE_HEIGHT - STATUS_BAR_HEIGHT - 1) {
-	}
-
-	void init();
-	void update(float deltaTime);
-
-	ashley::Entity * getPlayer() const {
-		return player;
-	}
+	std::vector<Item> contents;
 };
 
 }
 
-#endif /* INCLUDE_RGL_HPP_ */
+#endif /* INCLUDE_COMPONENTS_INVENTORY_HPP_ */

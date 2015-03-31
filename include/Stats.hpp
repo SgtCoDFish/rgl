@@ -1,5 +1,5 @@
 /*
- * RGL.hpp
+ * Stats.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,51 +24,22 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_RGL_HPP_
-#define INCLUDE_RGL_HPP_
-
-#include <string>
-
-#include <Ashley/core/Engine.hpp>
-
-#include "systems/MapRenderSystem.hpp"
-#include "systems/RenderSystem.hpp"
-
-#include "Map.hpp"
+#ifndef INCLUDE_STATS_HPP_
+#define INCLUDE_STATS_HPP_
 
 namespace rgl {
 
-class RGL {
-private:
-	const std::string windowTitle;
+struct Stats {
+	int hp;
 
-	ashley::Engine engine;
+	int atk;
+	int def;
 
-	ashley::Entity *player = nullptr, *mapComponent = nullptr;
-	MapRenderSystem * mapRenderSystem = nullptr;
-	RenderSystem * renderSystem = nullptr;
-
-	Map map;
-
-public:
-	static const int CONSOLE_WIDTH = 100;
-	static const int CONSOLE_HEIGHT = 55;
-	static const int STATUS_BAR_HEIGHT = 5;
-
-	explicit RGL(const std::string &windowTitle) :
-			windowTitle { windowTitle }, //
-			engine { }, //
-			map(CONSOLE_WIDTH, CONSOLE_HEIGHT - STATUS_BAR_HEIGHT - 1) {
-	}
-
-	void init();
-	void update(float deltaTime);
-
-	ashley::Entity * getPlayer() const {
-		return player;
+	explicit Stats(int hp, int atk, int def) :
+			hp { hp }, atk { atk }, def { def } {
 	}
 };
 
 }
 
-#endif /* INCLUDE_RGL_HPP_ */
+#endif /* INCLUDE_STATS_HPP_ */

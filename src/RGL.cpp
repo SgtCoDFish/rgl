@@ -24,16 +24,22 @@
  * SOFTWARE.
  */
 
+#include <iostream>
+
 #include <Ashley/AshleyCore.hpp>
 
 #include "libtcod.hpp"
 
 #include "RGL.hpp"
+#include "Item.hpp"
+#include "Stats.hpp"
 
 #include "components/Position.hpp"
 #include "components/Renderable.hpp"
 #include "components/PlayerInputListener.hpp"
 #include "components/MapRenderable.hpp"
+#include "components/Interactible.hpp"
+#include "components/Inventory.hpp"
 
 #include "systems/MapRenderSystem.hpp"
 #include "systems/RenderSystem.hpp"
@@ -43,6 +49,53 @@ void rgl::RGL::init() {
 	TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_GLSL);
 
 	const Room room = map.getRandomRoom();
+
+	std::vector<Room> takenRooms;
+	takenRooms.push_back(room);
+
+	const char *names[5] = { "Sword of Yendor", "Amulet of Awesome", "Ion Beam Gun", "Chicken Leg", "Leather Whip" };
+
+	for (int i = 0; i < 5; ++i) {
+		Room *chestRoom = nullptr;
+
+		while (true) {
+			chestRoom = &(map.getRandomRoom());
+			bool populatedRoom = false;
+
+			for (const auto &room : takenRooms) {
+				if (*chestRoom == room) {
+					populatedRoom = true;
+					break;
+				}
+			}
+
+			if (!populatedRoom) {
+				takenRooms.push_back(*chestRoom);
+				break;
+			}
+		}
+
+		auto chest = engine.addEntity();
+		const auto xNumerator = TCODRandom::getInstance()->getInt(1, 3);
+		const auto yNumerator = TCODRandom::getInstance()->getInt(1, 3);
+
+		const auto chestX = chestRoom->x1 + xNumerator * (chestRoom->w / 4);
+		const auto chestY = chestRoom->y1 + yNumerator * (chestRoom->h / 4);
+
+		if(chestX == 0 && chestY == 0) {
+			std::cout << "wat\n";
+		}
+
+		chest->add<Position>(chestX, chestY);
+		chest->add<Renderable>('#', TCODColor::yellow);
+		chest->add<Interactible>(InteractionType::LOOT);
+		chest->add<Inventory>();
+		ashley::ComponentMapper<Inventory>::getMapper().get(chest)->contents.emplace_back(
+		        Item(names[i], ItemType::WEAPON, Stats(50, 10, 5)));
+
+		const auto pos = chest->getComponent<Position>();
+		map.getTileAt(pos->position.x, pos->position.y)->contains.emplace_back(chest);
+	}
 
 	player = engine.addEntity();
 	player->add<Position>(room.x1 + (room.w / 2), room.y1 + (room.h / 2));

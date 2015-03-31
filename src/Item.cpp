@@ -1,5 +1,5 @@
 /*
- * RGL.hpp
+ * Item.cpp
  *
  * The MIT License (MIT)
  *
@@ -24,51 +24,20 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_RGL_HPP_
-#define INCLUDE_RGL_HPP_
+#include <iostream>
 
-#include <string>
+#include "Item.hpp"
 
-#include <Ashley/core/Engine.hpp>
-
-#include "systems/MapRenderSystem.hpp"
-#include "systems/RenderSystem.hpp"
-
-#include "Map.hpp"
-
-namespace rgl {
-
-class RGL {
-private:
-	const std::string windowTitle;
-
-	ashley::Engine engine;
-
-	ashley::Entity *player = nullptr, *mapComponent = nullptr;
-	MapRenderSystem * mapRenderSystem = nullptr;
-	RenderSystem * renderSystem = nullptr;
-
-	Map map;
-
-public:
-	static const int CONSOLE_WIDTH = 100;
-	static const int CONSOLE_HEIGHT = 55;
-	static const int STATUS_BAR_HEIGHT = 5;
-
-	explicit RGL(const std::string &windowTitle) :
-			windowTitle { windowTitle }, //
-			engine { }, //
-			map(CONSOLE_WIDTH, CONSOLE_HEIGHT - STATUS_BAR_HEIGHT - 1) {
+rgl::Item::Item(const std::string &name, ItemType type, Stats stats) :
+		name { name }, type { type }, stats { stats } {
+	if (type == ItemType::CRAFTING) {
+		std::cerr << "Invalid item created: " << name << " (given stats for a crafting item)\n";
 	}
-
-	void init();
-	void update(float deltaTime);
-
-	ashley::Entity * getPlayer() const {
-		return player;
-	}
-};
-
 }
 
-#endif /* INCLUDE_RGL_HPP_ */
+rgl::Item::Item(const std::string &name, ItemType type, CraftingGroup group) :
+		name { name }, type { type }, group { group } {
+	if (type != ItemType::CRAFTING) {
+		std::cerr << "Invalid item created: " << name << " (given a crafting group for a non-crafting item)\n";
+	}
+}
