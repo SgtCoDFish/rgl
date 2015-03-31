@@ -31,7 +31,17 @@
 
 namespace rgl {
 
-class PlayerInputListener : public ashley::Component {
+enum class PlayerInputState {
+	NORMAL, TARGETTING
+};
+
+class PlayerInputListener: public ashley::Component {
+public:
+	PlayerInputState state;
+
+	explicit PlayerInputListener(PlayerInputState state = PlayerInputState::NORMAL) :
+			state { state } {
+	}
 };
 
 }

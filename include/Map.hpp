@@ -27,16 +27,14 @@
 #ifndef INCLUDE_MAP_HPP_
 #define INCLUDE_MAP_HPP_
 
-#ifdef DEBUG
-#include <cstdio>
-#endif
-
 #include <memory>
 #include <vector>
 
 #include <Ashley/core/Entity.hpp>
 
 #include "tcod/libtcod.hpp"
+
+#include "easylogging++.h"
 
 namespace rgl {
 
@@ -49,11 +47,14 @@ struct Tile {
 struct Room {
 	int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 	int w = 0, h = 0;
+	int area = 0;
 
 	Room(int x1, int y1, int x2, int y2) :
 			x1(x1), y1(y1), x2(x2), y2(y2) {
 		w = x2 - x1;
 		h = y2 - y1;
+
+		area = w * h;
 	}
 
 	inline bool operator==(const Room &other) const {
@@ -76,12 +77,10 @@ public:
 	explicit Map(int width, int height);
 
 	inline Tile *getTileAt(int x, int y) const {
-#ifdef DEBUG
 		if (x < 0 || x > width || y < 0 || y > height) {
-			std::printf("Invalid coordinates passed to getTileAt: (%d, %d)", x, y);
+			RGLL->debug("Invalid call to getTileAt at: (%v, %v)", x, y);
 			return nullptr;
 		}
-#endif
 
 		return &(tiles[width * y + x]);
 	}

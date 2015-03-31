@@ -26,8 +26,12 @@
 
 #include <utility>
 #include <cstdio>
+#include <algorithm>
+#include <vector>
 
 #include "Map.hpp"
+
+#include "easylogging++.h"
 
 static int ROOM_MIN_SIZE = 6;
 static int ROOM_MAX_SIZE = 12;
@@ -36,10 +40,18 @@ rgl::Map::Map(int width, int height) :
 		tiles(new Tile[width * height]), width(width), height(height) {
 	TCODBsp bsp(0, 0, width, height);
 	// random, num times, max size, min size, x coeff, y coeff
-	bsp.splitRecursive(nullptr, 8, ROOM_MAX_SIZE, ROOM_MAX_SIZE, 1.5f, 1.5f);
+	bsp.splitRecursive(nullptr, 4, ROOM_MAX_SIZE, ROOM_MAX_SIZE, 1.5f, 1.5f);
 
 	BSPListener listener(*this);
 	bsp.traverseInvertedLevelOrder(&listener, nullptr);
+
+	std::sort(rooms.begin(), rooms.end(), [](const Room &room1, const Room &room2) {return room1.area > room2.area;});
+
+#ifdef DEBUG
+	for(const auto &room : rooms) {
+		RGLL->verbose(1, "Room: (%v, %v) -> (%v, %v) (a = %v)", room.x1, room.y1, room.x2, room.y2, room.area);
+	}
+#endif
 }
 
 void rgl::Map::dig(int x1, int y1, int x2, int y2) {
