@@ -40,6 +40,7 @@
 
 #include "RGL.hpp"
 #include "Map.hpp"
+#include "Message.hpp"
 
 #include "easylogging++.h"
 
@@ -135,10 +136,12 @@ void rgl::PlayerInputSystem::processTargettingState(ashley::Entity * const &enti
 		listener->target = target;
 
 		if (!targetTile->contains.empty()) {
-			listener->choice = targetTile->contains[0];
-			RGLL->debug("There's a chest here; open it?");
-			listener->state = PlayerInputState::RESPONDING;
-			return;
+			if (ashley::ComponentMapper<Inventory>::getMapper().get(targetTile->contains[0]) != nullptr) {
+				listener->choice = targetTile->contains[0];
+				MessageHandler::globalHandler->addMessage("There's a chest here; open it? (Y/N)");
+				listener->state = PlayerInputState::RESPONDING;
+				return;
+			}
 //			for (const auto &i : targetTile->contains) {
 //				const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(i);
 //
@@ -147,7 +150,7 @@ void rgl::PlayerInputSystem::processTargettingState(ashley::Entity * const &enti
 //				}
 //			}
 		} else {
-			RGLL->debug("There's nothing there.");
+			MessageHandler::globalHandler->addMessage("There's nothing there.");
 		}
 	}
 
@@ -174,41 +177,41 @@ void rgl::PlayerInputSystem::processRespondingState(ashley::Entity * const &enti
 			}
 
 			if (targetTile == nullptr || listener->choice == nullptr || !targetFound) {
-				RGLL->debug("Huh? You could've sworn there was something here!");
+				MessageHandler::globalHandler->addMessage("Huh? You could've sworn there was something here!");
 			} else {
 				// interactible is still there so proceed with interaction.
 				const auto interactible = ashley::ComponentMapper<Interactible>::getMapper().get(listener->choice);
 
-				switch(interactible->type) {
-					case InteractionType::LOOT: {
-						const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(listener->choice);
+				switch (interactible->type) {
+				case InteractionType::LOOT: {
+					const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(listener->choice);
 
-						if(inventory == nullptr || inventory->contents.empty()) {
-							RGLL->debug("Seems to be empty...");
-						} else {
-							RGLL->debug("The chest creaks open.");
-							const auto playerInventory = ashley::ComponentMapper<Inventory>::getMapper().get(entity);
+					if (inventory == nullptr || inventory->contents.empty()) {
+						MessageHandler::globalHandler->addMessage("Seems to be empty...");
+					} else {
+						MessageHandler::globalHandler->addMessage("The chest creaks open.");
+						const auto playerInventory = ashley::ComponentMapper<Inventory>::getMapper().get(entity);
 
-							if(playerInventory != nullptr) {
-								for(const auto &item : inventory->contents) {
-									RGLL->debug("You take a %v from the chest.", item.name);
-									playerInventory->contents.push_back(item);
-								}
-
-								inventory->contents.clear();
+						if (playerInventory != nullptr) {
+							for (const auto &item : inventory->contents) {
+								MessageHandler::globalHandler->addObtainedMessage(item.name);
+								playerInventory->contents.push_back(item);
 							}
+
+							inventory->contents.clear();
 						}
-
-						break;
 					}
 
-					default: {
-						break;
-					}
+					break;
+				}
+
+				default: {
+					break;
+				}
 				}
 			}
-		} else if(nPressed) {
-			RGLL->debug("Never mind.");
+		} else if (nPressed) {
+			MessageHandler::globalHandler->addMessage("Never mind.");
 		}
 
 		listener->state = PlayerInputState::NORMAL;

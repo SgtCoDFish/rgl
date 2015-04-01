@@ -24,8 +24,6 @@
  * SOFTWARE.
  */
 
-#include <iostream>
-
 #include <Ashley/AshleyCore.hpp>
 
 #include "libtcod.hpp"
@@ -45,9 +43,13 @@
 #include "systems/RenderSystem.hpp"
 #include "systems/PlayerInputSystem.hpp"
 
-void rgl::RGL::init() {
-	TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_GLSL);
+#include "easylogging++.h"
 
+rgl::MessageHandler *rgl::MessageHandler::globalHandler = nullptr;
+
+void rgl::RGL::init() {
+	messageHandler.addMessage("Welcome to RGL!");
+	MessageHandler::globalHandler = &messageHandler;
 	const Room room = map.getRandomRoom();
 
 	std::vector<Room> takenRooms;
@@ -82,8 +84,8 @@ void rgl::RGL::init() {
 		const auto chestX = chestRoom->x1 + xNumerator * (chestRoom->w / 4);
 		const auto chestY = chestRoom->y1 + yNumerator * (chestRoom->h / 4);
 
-		if(chestX == 0 && chestY == 0) {
-			std::cout << "wat\n";
+		if (chestX == 0 && chestY == 0) {
+			RGLL->debug("Invalid chest generated at (%v, %v).", chestX, chestY);
 		}
 
 		chest->add<Position>(chestX, chestY);
@@ -115,5 +117,16 @@ void rgl::RGL::init() {
 void rgl::RGL::update(float deltaTime) {
 	TCODConsole::root->clear();
 	engine.update(deltaTime);
+	renderHUD();
+	messageHandler.render();
 	TCODConsole::root->flush();
+}
+
+void rgl::RGL::renderHUD() {
+	const auto con = TCODConsole::root;
+
+	con->print(0, CONSOLE_HEIGHT - 6, "@ the Fearless");
+	con->setCharForeground(0, CONSOLE_HEIGHT - 6, TCODColor::red);
+	con->print(0, CONSOLE_HEIGHT - 5, "HP: 10/10");
+	con->print(0, CONSOLE_HEIGHT - 3, "Naked");
 }

@@ -35,6 +35,7 @@
 #include "systems/RenderSystem.hpp"
 
 #include "Map.hpp"
+#include "Message.hpp"
 
 namespace rgl {
 
@@ -50,6 +51,10 @@ private:
 
 	Map map;
 
+	MessageHandler messageHandler;
+
+	void renderHUD();
+
 public:
 	static const int CONSOLE_WIDTH = 100;
 	static const int CONSOLE_HEIGHT = 55;
@@ -58,7 +63,11 @@ public:
 	explicit RGL(const std::string &windowTitle) :
 			windowTitle { windowTitle }, //
 			engine { }, //
-			map(CONSOLE_WIDTH, CONSOLE_HEIGHT - STATUS_BAR_HEIGHT - 1) {
+			map { CONSOLE_WIDTH, CONSOLE_HEIGHT - STATUS_BAR_HEIGHT - 1 }, //
+			messageHandler { nullptr, CONSOLE_WIDTH / 2, CONSOLE_HEIGHT - 6, 6 } //
+	{
+		TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_GLSL);
+		messageHandler.setConsole(TCODConsole::root);
 	}
 
 	void init();
