@@ -13,3 +13,5 @@ include/tcod
 lib/*
 lib
 
+Win32/*
+Win32
