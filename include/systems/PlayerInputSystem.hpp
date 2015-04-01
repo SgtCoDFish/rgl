@@ -41,13 +41,16 @@ class PlayerInputSystem: public ashley::IteratingSystem {
 private:
 	// remember to update resetPressedKeys too
 	bool upPressed = false, downPressed = false, leftPressed = false, rightPressed = false, spacePressed = false;
+	bool yPressed = false, nPressed = false;
+	bool f5Pressed = false;
 
 	void resetPressedKeys() {
-		upPressed = downPressed = leftPressed = rightPressed = spacePressed = false;
+		upPressed = downPressed = leftPressed = rightPressed = spacePressed = yPressed = nPressed = f5Pressed = false;
 	}
 
 	inline void processNormalState(ashley::Entity * const &entity, float deltaTime, PlayerInputListener * const listener);
 	inline void processTargettingState(ashley::Entity * const &entity, float deltaTime, PlayerInputListener * const listener);
+	inline void processRespondingState(ashley::Entity * const &entity, float deltaTime, PlayerInputListener * const listener);
 
 	Map *map = nullptr;
 public:

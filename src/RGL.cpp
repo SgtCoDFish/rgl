@@ -101,6 +101,7 @@ void rgl::RGL::init() {
 	player->add<Position>(room.x1 + (room.w / 2), room.y1 + (room.h / 2));
 	player->add<Renderable>('@', TCODColor::red);
 	player->add<PlayerInputListener>();
+	player->add<Inventory>();
 
 	mapComponent = engine.addEntity();
 	mapComponent->add<Position>(0, 0);

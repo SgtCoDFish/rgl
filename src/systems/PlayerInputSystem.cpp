@@ -46,6 +46,16 @@
 void rgl::PlayerInputSystem::processEntity(ashley::Entity * const &entity, float deltaTime) {
 	const auto inputComponent = ashley::ComponentMapper<PlayerInputListener>::getMapper().get(entity);
 
+	if (f5Pressed) {
+		const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(entity);
+
+		if (inventory != nullptr) {
+			for (const auto &item : inventory->contents) {
+				RGLL->debug("Player has: %v", item.name);
+			}
+		}
+	}
+
 	switch (inputComponent->state) {
 	case PlayerInputState::NORMAL: {
 		processNormalState(entity, deltaTime, inputComponent);
@@ -54,6 +64,11 @@ void rgl::PlayerInputSystem::processEntity(ashley::Entity * const &entity, float
 
 	case PlayerInputState::TARGETTING: {
 		processTargettingState(entity, deltaTime, inputComponent);
+		break;
+	}
+
+	case PlayerInputState::RESPONDING: {
+		processRespondingState(entity, deltaTime, inputComponent);
 		break;
 	}
 
@@ -117,19 +132,88 @@ void rgl::PlayerInputSystem::processTargettingState(ashley::Entity * const &enti
 	const auto targetTile = map->getTileAt(target.x, target.y);
 
 	if (targetTile != nullptr) {
-		if (!targetTile->contains.empty()) {
-			for (const auto &i : targetTile->contains) {
-				const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(i);
+		listener->target = target;
 
-				for(const auto &item : inventory->contents) {
-					RGLL->debug("(%v, %v) contains %v.", target.x, target.y, item.name);
-				}
-			}
+		if (!targetTile->contains.empty()) {
+			listener->choice = targetTile->contains[0];
+			RGLL->debug("There's a chest here; open it?");
+			listener->state = PlayerInputState::RESPONDING;
+			return;
+//			for (const auto &i : targetTile->contains) {
+//				const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(i);
+//
+//				for (const auto &item : inventory->contents) {
+//					RGLL->debug("(%v, %v) contains %v.", target.x, target.y, item.name);
+//				}
+//			}
+		} else {
+			RGLL->debug("There's nothing there.");
 		}
 	}
 
-	if(interactionDone) {
+	if (interactionDone) {
 		listener->state = PlayerInputState::NORMAL;
+	}
+}
+
+void rgl::PlayerInputSystem::processRespondingState(ashley::Entity * const &entity, float deltaTime,
+        PlayerInputListener * const listener) {
+	if (yPressed || nPressed) {
+		if (yPressed) {
+			const auto targetTile = map->getTileAt(listener->target.x, listener->target.y);
+			bool targetFound = false;
+
+			// make sure the tile still contains the interaction choice.
+			if (targetTile != nullptr && listener->choice != nullptr) {
+				for (const auto &content : targetTile->contains) {
+					if (content == listener->choice) {
+						targetFound = true;
+						break;
+					}
+				}
+			}
+
+			if (targetTile == nullptr || listener->choice == nullptr || !targetFound) {
+				RGLL->debug("Huh? You could've sworn there was something here!");
+			} else {
+				// interactible is still there so proceed with interaction.
+				const auto interactible = ashley::ComponentMapper<Interactible>::getMapper().get(listener->choice);
+
+				switch(interactible->type) {
+					case InteractionType::LOOT: {
+						const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(listener->choice);
+
+						if(inventory == nullptr || inventory->contents.empty()) {
+							RGLL->debug("Seems to be empty...");
+						} else {
+							RGLL->debug("The chest creaks open.");
+							const auto playerInventory = ashley::ComponentMapper<Inventory>::getMapper().get(entity);
+
+							if(playerInventory != nullptr) {
+								for(const auto &item : inventory->contents) {
+									RGLL->debug("You take a %v from the chest.", item.name);
+									playerInventory->contents.push_back(item);
+								}
+
+								inventory->contents.clear();
+							}
+						}
+
+						break;
+					}
+
+					default: {
+						break;
+					}
+				}
+			}
+		} else if(nPressed) {
+			RGLL->debug("Never mind.");
+		}
+
+		listener->state = PlayerInputState::NORMAL;
+		listener->target.x = -1;
+		listener->target.y = -1;
 	}
 }
 
@@ -164,6 +248,18 @@ void rgl::PlayerInputSystem::update(float deltaTime) {
 				break;
 			}
 
+			case 'y':
+			case 'Y': {
+				yPressed = true;
+				break;
+			}
+
+			case 'n':
+			case 'N': {
+				nPressed = true;
+				break;
+			}
+
 			default: {
 				break;
 			}
@@ -193,6 +289,11 @@ void rgl::PlayerInputSystem::update(float deltaTime) {
 
 		case TCODK_SPACE: {
 			spacePressed = true;
+			break;
+		}
+
+		case TCODK_F5: {
+			f5Pressed = true;
 			break;
 		}
 

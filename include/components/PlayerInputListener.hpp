@@ -32,12 +32,17 @@
 namespace rgl {
 
 enum class PlayerInputState {
-	NORMAL, TARGETTING
+	NORMAL, // moving around
+	TARGETTING, // choosing a target for spell/interaction
+	//CHOOSING, // choosing from a list of options
+	RESPONDING // responding to a yes/no question
 };
 
 class PlayerInputListener: public ashley::Component {
 public:
 	PlayerInputState state;
+	ashley::Entity *choice = nullptr;
+	glm::ivec2 target { -1, -1 };
 
 	explicit PlayerInputListener(PlayerInputState state = PlayerInputState::NORMAL) :
 			state { state } {
