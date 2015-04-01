@@ -124,9 +124,10 @@ void rgl::RGL::update(float deltaTime) {
 
 void rgl::RGL::renderHUD() {
 	const auto con = TCODConsole::root;
+	static const int msgX = 1;
 
-	con->print(0, CONSOLE_HEIGHT - 6, "@ the Fearless");
-	con->setCharForeground(0, CONSOLE_HEIGHT - 6, TCODColor::red);
-	con->print(0, CONSOLE_HEIGHT - 5, "HP: 10/10");
-	con->print(0, CONSOLE_HEIGHT - 3, "Naked");
+	con->print(msgX, CONSOLE_HEIGHT - 6, "@ the Fearless");
+	con->setCharForeground(msgX, CONSOLE_HEIGHT - 6, TCODColor::red);
+	con->print(msgX, CONSOLE_HEIGHT - 5, "HP: 10/10");
+	con->print(msgX, CONSOLE_HEIGHT - 3, "Naked");
 }
