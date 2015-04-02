@@ -38,7 +38,7 @@ enum class ItemType {
 };
 
 enum class CraftingGroup {
-	METAL, MAGIC
+	METAL, MAGIC, SKIN,
 };
 
 struct Item {

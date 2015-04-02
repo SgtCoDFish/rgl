@@ -36,9 +36,16 @@
 
 namespace rgl {
 
-class Inventory : public ashley::Component {
+class Inventory: public ashley::Component {
 public:
 	std::vector<Item> contents;
+
+	explicit Inventory() {
+	}
+
+	explicit Inventory(const Item &item) {
+		contents.emplace_back(item);
+	}
 };
 
 }

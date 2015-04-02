@@ -99,6 +99,12 @@ void rgl::RGL::init() {
 		map.getTileAt(pos->position.x, pos->position.y)->contains.emplace_back(chest);
 	}
 
+	const auto tiger = engine.addEntity();
+	tiger->add<Position>(map.getRoom(0).x1 + 1, map.getRoom(0).y1 + 1);
+	tiger->add<Renderable>('T', TCODColor::orange);
+	tiger->add<Inventory>(Item("Tiger Skin", ItemType::CRAFTING, CraftingGroup::SKIN));
+	tiger->add<Interactible>(InteractionType::FIGHT);
+
 	player = engine.addEntity();
 	player->add<Position>(room.x1 + (room.w / 2), room.y1 + (room.h / 2));
 	player->add<Renderable>('@', TCODColor::red);
