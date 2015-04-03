@@ -1,5 +1,5 @@
 /*
- * RGL.hpp
+ * BattleSystem.cpp
  *
  * The MIT License (MIT)
  *
@@ -24,62 +24,36 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_RGL_HPP_
-#define INCLUDE_RGL_HPP_
+#include <vector>
+#include <algorithm>
 
-#include <string>
+#include <Ashley/core/ComponentMapper.hpp>
 
-#include <Ashley/core/Engine.hpp>
+#include "components/Battling.hpp"
 
-#include "systems/MapRenderSystem.hpp"
-#include "systems/RenderSystem.hpp"
 #include "systems/BattleSystem.hpp"
 
-#include "Map.hpp"
+#include "Attack.hpp"
 #include "Message.hpp"
 
-namespace rgl {
+void rgl::BattleSystem::update(float deltaTime) {
+	const auto battlingMapper = ashley::ComponentMapper<Battling>::getMapper();
 
-class RGL {
-private:
-	const std::string windowTitle;
+	for (const auto &attack : attacks) {
+		const auto fromBat = battlingMapper.get(attack.from);
+		const auto againstBat = battlingMapper.get(attack.against);
 
-	ashley::Engine engine;
+		const int damage = std::max(fromBat->stats.atk - againstBat->stats.def, 1);
+		againstBat->stats.hp -= damage;
+		MessageHandler::globalHandler->addAttackMessage(attack, damage);
 
-	ashley::Entity *player = nullptr, *mapComponent = nullptr;
-	MapRenderSystem *mapRenderSystem = nullptr;
-	RenderSystem *renderSystem = nullptr;
-	BattleSystem *battleSystem = nullptr;
-
-	Map map;
-
-	MessageHandler messageHandler;
-
-	void renderHUD();
-
-public:
-	static const int CONSOLE_WIDTH = 100;
-	static const int CONSOLE_HEIGHT = 55;
-	static const int STATUS_BAR_HEIGHT = 5;
-
-	explicit RGL(const std::string &windowTitle) :
-			windowTitle { windowTitle }, //
-			engine { }, //
-			map { CONSOLE_WIDTH, CONSOLE_HEIGHT - STATUS_BAR_HEIGHT - 1 }, //
-			messageHandler { nullptr, CONSOLE_WIDTH / 2, CONSOLE_HEIGHT - 6, 6 } //
-	{
-		TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_GLSL);
-		messageHandler.setConsole(TCODConsole::root);
+		if (againstBat->stats.hp > 0) {
+			// if still alive, retaliate
+			const int retDmg = std::max(againstBat->stats.atk - fromBat->stats.def, 1);
+			fromBat->stats.hp -= retDmg;
+			MessageHandler::globalHandler->addRetaliationAttackMessage(attack, retDmg);
+		}
 	}
 
-	void init();
-	void update(float deltaTime);
-
-	ashley::Entity * getPlayer() const {
-		return player;
-	}
-};
-
+	attacks.clear();
 }
-
-#endif /* INCLUDE_RGL_HPP_ */

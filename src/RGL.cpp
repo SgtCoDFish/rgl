@@ -39,10 +39,12 @@
 #include "components/Interactible.hpp"
 #include "components/Inventory.hpp"
 #include "components/Battling.hpp"
+#include "components/Named.hpp"
 
 #include "systems/MapRenderSystem.hpp"
 #include "systems/RenderSystem.hpp"
 #include "systems/PlayerInputSystem.hpp"
+#include "systems/BattleSystem.hpp"
 
 #include "easylogging++.h"
 
@@ -105,6 +107,7 @@ void rgl::RGL::init() {
 	tiger->add<Inventory>(Item("Tiger Skin", ItemType::CRAFTING, CraftingGroup::SKIN));
 	tiger->add<Interactible>(InteractionType::FIGHT);
 	tiger->add<Battling>(Stats(4, 2, 1, 1));
+	tiger->add<Named>("Tony");
 	map.registerTileContents(tiger);
 
 	player = engine.addEntity();
@@ -113,12 +116,14 @@ void rgl::RGL::init() {
 	player->add<PlayerInputListener>();
 	player->add<Inventory>();
 	player->add<Battling>(Stats(10, 3, 1, 2));
+	player->add<Named>("@");
 
 	mapComponent = engine.addEntity();
 	mapComponent->add<Position>(0, 0);
 	mapComponent->add<MapRenderable>(map);
 
-	engine.addSystem<PlayerInputSystem>(&map);
+	battleSystem = engine.addSystem<BattleSystem>();
+	engine.addSystem<PlayerInputSystem>(&map, battleSystem);
 	mapRenderSystem = engine.addSystem<MapRenderSystem>(TCODConsole::root);
 	renderSystem = engine.addSystem<RenderSystem>(TCODConsole::root);
 }

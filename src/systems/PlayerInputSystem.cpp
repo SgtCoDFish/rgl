@@ -145,7 +145,7 @@ void rgl::PlayerInputSystem::processTargettingState(ashley::Entity * const &enti
 				} else {
 					listener->choice = e;
 
-					switch(interactible->type) {
+					switch (interactible->type) {
 					case InteractionType::LOOT: {
 						MessageHandler::globalHandler->addMessage("There's a chest here; open it? (Y/N)");
 						listener->state = PlayerInputState::RESPONDING;
@@ -153,7 +153,7 @@ void rgl::PlayerInputSystem::processTargettingState(ashley::Entity * const &enti
 					}
 
 					case InteractionType::FIGHT: {
-						MessageHandler::globalHandler->addMessage("You hit it with a stick.");
+						battleSystem->addAttack(Attack(entity, e));
 						break;
 					}
 
@@ -169,6 +169,9 @@ void rgl::PlayerInputSystem::processTargettingState(ashley::Entity * const &enti
 	}
 
 	if (interactionDone) {
+		listener->choice = nullptr;
+		listener->target.x = -1;
+		listener->target.y = -1;
 		listener->state = PlayerInputState::NORMAL;
 	}
 }

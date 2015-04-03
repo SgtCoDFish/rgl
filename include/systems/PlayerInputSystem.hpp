@@ -36,6 +36,7 @@
 namespace rgl {
 
 class Map;
+class BattleSystem;
 
 class PlayerInputSystem: public ashley::IteratingSystem {
 private:
@@ -48,14 +49,19 @@ private:
 		upPressed = downPressed = leftPressed = rightPressed = spacePressed = yPressed = nPressed = f5Pressed = false;
 	}
 
-	inline void processNormalState(ashley::Entity * const &entity, float deltaTime, PlayerInputListener * const listener);
-	inline void processTargettingState(ashley::Entity * const &entity, float deltaTime, PlayerInputListener * const listener);
-	inline void processRespondingState(ashley::Entity * const &entity, float deltaTime, PlayerInputListener * const listener);
+	inline void processNormalState(ashley::Entity * const &entity, float deltaTime,
+	        PlayerInputListener * const listener);
+	inline void processTargettingState(ashley::Entity * const &entity, float deltaTime,
+	        PlayerInputListener * const listener);
+	inline void processRespondingState(ashley::Entity * const &entity, float deltaTime,
+	        PlayerInputListener * const listener);
 
 	Map *map = nullptr;
+	BattleSystem *battleSystem = nullptr;
 public:
-	explicit PlayerInputSystem(Map *map) :
-			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(PlayerInputListener) }), 1000u), map(map) {
+	explicit PlayerInputSystem(Map *map, BattleSystem * const battleSystem) :
+			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(PlayerInputListener) }), 1000u), map(
+			        map), battleSystem { battleSystem } {
 	}
 
 	void update(float deltaTime) override;

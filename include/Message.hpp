@@ -32,7 +32,10 @@
 #include <vector>
 #include <algorithm>
 #include <memory>
-#include <array>
+
+#include "tcod/libtcod.hpp"
+
+#include "Attack.hpp"
 
 namespace rgl {
 
@@ -79,37 +82,16 @@ public:
 			console { console }, x { x }, y { y }, messageCount { messageCount }, textColor { textColor } {
 	}
 
-	void addMessage(const Message &message) {
-		messages.push_back(message);
-	}
+	void addMessage(const Message &message);
 
-	void addObtainedMessage(const std::string &itemObtained) {
-		std::stringstream ss;
-		ss << "Obtained a";
+	void addObtainedMessage(const std::string &itemObtained);
 
-		char first = itemObtained.at(0);
+	void addAttackMessage(const Attack &attack, int damage);
+	void addRetaliationAttackMessage(const Attack &attack, int damage);
 
-		static const std::array<char, 10> vowels = {{'a','A','e','E','i','I','o','O','u','U'}};
-		if (std::find(vowels.begin(), vowels.end(), first) != vowels.end()) {
-			ss << "n";
-		}
+	void render() const;
 
-		ss << " " << itemObtained;
-
-		messages.push_back(ss.str());
-	}
-
-	void render() const {
-		console->setDefaultForeground(textColor);
-
-		const int actualCount = std::min((unsigned int) messages.size(), messageCount);
-
-		for (int i = 0; i < actualCount; ++i) {
-			console->print(x, y + i, messages[messages.size() - 1 - i].message.c_str());
-		}
-	}
-
-	void setConsole(TCODConsole * const console) {
+	inline void setConsole(TCODConsole * const console) {
 		this->console = console;
 	}
 };
