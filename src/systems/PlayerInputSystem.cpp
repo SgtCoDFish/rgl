@@ -35,6 +35,7 @@
 #include "components/PlayerInputListener.hpp"
 #include "components/Inventory.hpp"
 #include "components/Interactible.hpp"
+#include "components/Battling.hpp"
 
 #include "systems/PlayerInputSystem.hpp"
 
@@ -136,19 +137,32 @@ void rgl::PlayerInputSystem::processTargettingState(ashley::Entity * const &enti
 		listener->target = target;
 
 		if (!targetTile->contains.empty()) {
-			if (ashley::ComponentMapper<Inventory>::getMapper().get(targetTile->contains[0]) != nullptr) {
-				listener->choice = targetTile->contains[0];
-				MessageHandler::globalHandler->addMessage("There's a chest here; open it? (Y/N)");
-				listener->state = PlayerInputState::RESPONDING;
-				return;
+			for (const auto &e : targetTile->contains) {
+				const auto interactible = ashley::ComponentMapper<Interactible>::getMapper().get(e);
+
+				if (interactible == nullptr) {
+					continue;
+				} else {
+					listener->choice = e;
+
+					switch(interactible->type) {
+					case InteractionType::LOOT: {
+						MessageHandler::globalHandler->addMessage("There's a chest here; open it? (Y/N)");
+						listener->state = PlayerInputState::RESPONDING;
+						return;
+					}
+
+					case InteractionType::FIGHT: {
+						MessageHandler::globalHandler->addMessage("You hit it with a stick.");
+						break;
+					}
+
+					default: {
+						break;
+					}
+					}
+				}
 			}
-//			for (const auto &i : targetTile->contains) {
-//				const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(i);
-//
-//				for (const auto &item : inventory->contents) {
-//					RGLL->debug("(%v, %v) contains %v.", target.x, target.y, item.name);
-//				}
-//			}
 		} else {
 			MessageHandler::globalHandler->addMessage("There's nothing there.");
 		}
@@ -204,6 +218,19 @@ void rgl::PlayerInputSystem::processRespondingState(ashley::Entity * const &enti
 
 					break;
 				}
+
+//				case InteractionType::FIGHT: {
+//					const auto battling = ashley::ComponentMapper<Battling>::getMapper().get(entity);
+//
+//					if (battling == nullptr) {
+//						MessageHandler::globalHandler->addMessage(
+//						        "It looks defenceless... you can't bring yourself to attack it.");
+//					} else {
+//						MessageHandler::globalHandler->addMessage("You bash it with your stick.");
+//					}
+//
+//					break;
+//				}
 
 				default: {
 					break;

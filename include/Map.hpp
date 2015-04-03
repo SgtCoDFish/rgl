@@ -31,10 +31,13 @@
 #include <vector>
 
 #include <Ashley/core/Entity.hpp>
+#include <Ashley/core/ComponentMapper.hpp>
 
 #include "tcod/libtcod.hpp"
 
 #include "easylogging++.h"
+
+#include "components/Position.hpp"
 
 namespace rgl {
 
@@ -75,6 +78,22 @@ protected:
 
 public:
 	explicit Map(int width, int height);
+
+	void registerTileContents(ashley::Entity * const &entity) {
+		const auto pos = ashley::ComponentMapper<Position>::getMapper().get(entity);
+
+		if (pos != nullptr) {
+			const auto tile = getTileAt(pos->position.x, pos->position.y);
+
+			if (tile != nullptr) {
+				tile->contains.emplace_back(entity);
+			} else {
+				RGLL->debug("Can't place entity at (%v, %v) because the tile doesn't exist.", pos->position.x, pos->position.y);
+			}
+		} else {
+			RGLL->debug("Tried to registerTileContents with entity which has no position");
+		}
+	}
 
 	inline Tile *getTileAt(int x, int y) const {
 		if (x < 0 || x > width || y < 0 || y > height) {

@@ -38,6 +38,7 @@
 #include "components/MapRenderable.hpp"
 #include "components/Interactible.hpp"
 #include "components/Inventory.hpp"
+#include "components/Battling.hpp"
 
 #include "systems/MapRenderSystem.hpp"
 #include "systems/RenderSystem.hpp"
@@ -95,8 +96,7 @@ void rgl::RGL::init() {
 		ashley::ComponentMapper<Inventory>::getMapper().get(chest)->contents.emplace_back(
 		        Item(names[i], ItemType::WEAPON, Stats(50, 10, 5)));
 
-		const auto pos = chest->getComponent<Position>();
-		map.getTileAt(pos->position.x, pos->position.y)->contains.emplace_back(chest);
+		map.registerTileContents(chest);
 	}
 
 	const auto tiger = engine.addEntity();
@@ -104,12 +104,15 @@ void rgl::RGL::init() {
 	tiger->add<Renderable>('T', TCODColor::orange);
 	tiger->add<Inventory>(Item("Tiger Skin", ItemType::CRAFTING, CraftingGroup::SKIN));
 	tiger->add<Interactible>(InteractionType::FIGHT);
+	tiger->add<Battling>(Stats(4, 2, 1, 1));
+	map.registerTileContents(tiger);
 
 	player = engine.addEntity();
 	player->add<Position>(room.x1 + (room.w / 2), room.y1 + (room.h / 2));
 	player->add<Renderable>('@', TCODColor::red);
 	player->add<PlayerInputListener>();
 	player->add<Inventory>();
+	player->add<Battling>(Stats(10, 3, 1, 2));
 
 	mapComponent = engine.addEntity();
 	mapComponent->add<Position>(0, 0);

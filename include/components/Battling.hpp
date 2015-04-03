@@ -1,5 +1,5 @@
 /*
- * Stats.hpp
+ * Battling.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,24 +24,22 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_STATS_HPP_
-#define INCLUDE_STATS_HPP_
+#ifndef INCLUDE_COMPONENTS_BATTLING_HPP_
+#define INCLUDE_COMPONENTS_BATTLING_HPP_
+
+#include <Ashley/core/Component.hpp>
+
+#include "Stats.hpp"
 
 namespace rgl {
 
-struct Stats {
-	int hp;
+class Battling : public ashley::Component {
+public:
+	Stats stats;
 
-	int atk;
-	int def;
-
-	int speed;
-
-	explicit Stats(int hp, int atk, int def, int speed = 0) :
-			hp { hp }, atk { atk }, def { def }, speed { speed } {
-	}
+	explicit Battling(const Stats &stats) : stats { stats } {}
 };
 
 }
 
-#endif /* INCLUDE_STATS_HPP_ */
+#endif /* INCLUDE_COMPONENTS_BATTLING_HPP_ */
