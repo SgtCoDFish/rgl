@@ -1,5 +1,5 @@
 /*
- * Stats.hpp
+ * EntityUtil.hpp
  *
  * The MIT License (MIT)
  *
@@ -23,26 +23,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+#ifndef INCLUDE_ENTITYUTIL_HPP_
+#define INCLUDE_ENTITYUTIL_HPP_
 
-#ifndef INCLUDE_STATS_HPP_
-#define INCLUDE_STATS_HPP_
+namespace ashley {
+class Engine;
+class Entity;
+}
 
 namespace rgl {
+struct Item;
 
-struct Stats {
-	int maxHP;
-	int hp;
+class EntityUtil {
+public:
+	static ashley::Entity *generateTigerEntity(ashley::Engine &engine, int x, int y);
 
-	int atk;
-	int def;
-
-	int speed;
-
-	explicit Stats(int maxHP, int atk, int def, int speed = 0) :
-			maxHP { maxHP }, hp { maxHP }, atk { atk }, def { def }, speed { speed } {
-	}
+	static ashley::Entity *generateChestEntity(ashley::Engine &engine, int x, int y, const Item &item);
 };
 
 }
 
-#endif /* INCLUDE_STATS_HPP_ */
+#endif /* INCLUDE_ENTITYUTIL_HPP_ */

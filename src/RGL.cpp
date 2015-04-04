@@ -29,6 +29,7 @@
 #include "libtcod.hpp"
 
 #include "RGL.hpp"
+#include "EntityUtil.hpp"
 #include "Item.hpp"
 #include "Stats.hpp"
 
@@ -81,7 +82,6 @@ void rgl::RGL::init() {
 			}
 		}
 
-		auto chest = engine.addEntity();
 		const auto xNumerator = TCODRandom::getInstance()->getInt(1, 3);
 		const auto yNumerator = TCODRandom::getInstance()->getInt(1, 3);
 
@@ -92,24 +92,13 @@ void rgl::RGL::init() {
 			RGLL->debug("Invalid chest generated at (%v, %v).", chestX, chestY);
 		}
 
-		chest->add<Position>(chestX, chestY);
-		chest->add<Renderable>('#', TCODColor::yellow);
-		chest->add<Interactible>(InteractionType::LOOT);
-		chest->add<Inventory>();
-		ashley::ComponentMapper<Inventory>::getMapper().get(chest)->contents.emplace_back(
-		        Item(names[i], ItemType::WEAPON, Stats(50, 10, 5)));
+		auto chest = EntityUtil::generateChestEntity(engine, chestX, chestY,
+		        Item(names[i], ItemType::WEAPON, Stats(10, 2, 2)));
 
 		map.registerTileContents(chest);
 	}
 
-	const auto tiger = engine.addEntity();
-	tiger->add<Position>(room.x1 + 1, room.y1 + 1);
-	tiger->add<Renderable>('T', TCODColor::orange);
-	tiger->add<Inventory>(Item("Tiger Skin", ItemType::CRAFTING, CraftingGroup::SKIN));
-	tiger->add<Interactible>(InteractionType::FIGHT);
-	tiger->add<Battling>(Stats(4, 2, 1, 1));
-	tiger->add<Named>("tiger", NameType::SPECIES);
-	map.registerTileContents(tiger);
+	map.registerTileContents(EntityUtil::generateTigerEntity(engine, room.x1 + 1, room.y1 + 1));
 
 	player = engine.addEntity();
 	player->add<Position>(room.x1 + (room.w / 2), room.y1 + (room.h / 2));
@@ -142,8 +131,14 @@ void rgl::RGL::renderHUD() {
 	const auto con = TCODConsole::root;
 	static const int msgX = 1;
 
-	con->print(msgX, CONSOLE_HEIGHT - 6, "@ the Fearless");
-	con->setCharForeground(msgX, CONSOLE_HEIGHT - 6, TCODColor::red);
-	con->print(msgX, CONSOLE_HEIGHT - 5, "HP: 10/10");
+	const auto &playerName = ashley::ComponentMapper<Named>::getMapper().get(player)->name;
+	const auto playerStats = ashley::ComponentMapper<Battling>::getMapper().get(player)->stats;
+
+	con->print(msgX, CONSOLE_HEIGHT - 6, "%s the Fearless", playerName.c_str());
+	for (unsigned int i = 0u; i < playerName.length(); ++i) {
+		con->setCharForeground(msgX + i, CONSOLE_HEIGHT - 6, TCODColor::red);
+	}
+
+	con->print(msgX, CONSOLE_HEIGHT - 5, "HP: %d/%d", playerStats.hp, playerStats.maxHP);
 	con->print(msgX, CONSOLE_HEIGHT - 3, "Naked");
 }
