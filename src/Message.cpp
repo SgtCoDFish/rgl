@@ -25,6 +25,7 @@
  */
 
 #include <Ashley/core/ComponentMapper.hpp>
+#include <Ashley/core/Entity.hpp>
 
 #include "components/Named.hpp"
 
@@ -78,6 +79,17 @@ void rgl::MessageHandler::addRetaliationAttackMessage(const Attack &attack, int 
 	const std::string aName = (againstNamed == nullptr ? "Somebody else" : againstNamed->name);
 
 	ss << aName << " retaliates against " << fName << " for " << damage << " damage!";
+	messages.emplace_back(ss.str());
+}
+
+void rgl::MessageHandler::addDeathMessage(ashley::Entity * const entity) {
+	const auto named = ashley::ComponentMapper<Named>::getMapper().get(entity);
+
+	const std::string name = (named == nullptr ? "A body" : named->name);
+
+	std::stringstream ss;
+	ss << name << "'s lifeless form fades into the aether.";
+
 	messages.emplace_back(ss.str());
 }
 

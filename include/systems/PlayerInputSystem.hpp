@@ -59,8 +59,8 @@ private:
 	Map *map = nullptr;
 	BattleSystem *battleSystem = nullptr;
 public:
-	explicit PlayerInputSystem(Map *map, BattleSystem * const battleSystem) :
-			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(PlayerInputListener) }), 1000u), map(
+	explicit PlayerInputSystem(Map *map, BattleSystem * const battleSystem, int priority) :
+			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(PlayerInputListener) }), priority), map(
 			        map), battleSystem { battleSystem } {
 	}
 

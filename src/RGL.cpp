@@ -45,6 +45,7 @@
 #include "systems/RenderSystem.hpp"
 #include "systems/PlayerInputSystem.hpp"
 #include "systems/BattleSystem.hpp"
+#include "systems/DeathSystem.hpp"
 
 #include "easylogging++.h"
 
@@ -122,10 +123,11 @@ void rgl::RGL::init() {
 	mapComponent->add<Position>(0, 0);
 	mapComponent->add<MapRenderable>(map);
 
-	battleSystem = engine.addSystem<BattleSystem>();
-	engine.addSystem<PlayerInputSystem>(&map, battleSystem);
-	mapRenderSystem = engine.addSystem<MapRenderSystem>(TCODConsole::root);
-	renderSystem = engine.addSystem<RenderSystem>(TCODConsole::root);
+	battleSystem = engine.addSystem<BattleSystem>(1000);
+	engine.addSystem<PlayerInputSystem>(&map, battleSystem, 0);
+	engine.addSystem<DeathSystem>(5000);
+	mapRenderSystem = engine.addSystem<MapRenderSystem>(TCODConsole::root, 100000);
+	renderSystem = engine.addSystem<RenderSystem>(TCODConsole::root, 500000);
 }
 
 void rgl::RGL::update(float deltaTime) {

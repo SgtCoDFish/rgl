@@ -30,6 +30,7 @@
 #include <Ashley/core/ComponentMapper.hpp>
 
 #include "components/Battling.hpp"
+#include "components/DeathMarker.hpp"
 
 #include "systems/BattleSystem.hpp"
 
@@ -40,6 +41,10 @@ void rgl::BattleSystem::update(float deltaTime) {
 	const auto battlingMapper = ashley::ComponentMapper<Battling>::getMapper();
 
 	for (const auto &attack : attacks) {
+		if(attack.from->hasComponent<DeathMarker>() || attack.against->hasComponent<DeathMarker>()) {
+			continue;
+		}
+
 		const auto fromBat = battlingMapper.get(attack.from);
 		const auto againstBat = battlingMapper.get(attack.against);
 
@@ -52,6 +57,12 @@ void rgl::BattleSystem::update(float deltaTime) {
 			const int retDmg = std::max(againstBat->stats.atk - fromBat->stats.def, 1);
 			fromBat->stats.hp -= retDmg;
 			MessageHandler::globalHandler->addRetaliationAttackMessage(attack, retDmg);
+
+			if(fromBat->stats.hp <= 0) {
+				attack.from->add<DeathMarker>();
+			}
+		} else {
+			attack.against->add<DeathMarker>();
 		}
 	}
 

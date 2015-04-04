@@ -37,6 +37,10 @@
 
 #include "Attack.hpp"
 
+namespace ashley {
+class Entity;
+}
+
 namespace rgl {
 
 class Message {
@@ -88,6 +92,8 @@ public:
 
 	void addAttackMessage(const Attack &attack, int damage);
 	void addRetaliationAttackMessage(const Attack &attack, int damage);
+
+	void addDeathMessage(ashley::Entity * const entity);
 
 	void render() const;
 

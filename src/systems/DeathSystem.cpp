@@ -1,5 +1,5 @@
 /*
- * MapRenderSystem.hpp
+ * DeathSystem.cpp
  *
  * The MIT License (MIT)
  *
@@ -24,29 +24,16 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_SYSTEMS_MAPRENDERSYSTEM_HPP_
-#define INCLUDE_SYSTEMS_MAPRENDERSYSTEM_HPP_
+#include <string>
 
-#include <Ashley/systems/IteratingSystem.hpp>
-#include <components/MapRenderable.hpp>
+#include <Ashley/core/ComponentMapper.hpp>
 
-#include "components/Position.hpp"
+#include "systems/DeathSystem.hpp"
 
-namespace rgl {
+#include "Message.hpp"
 
-class MapRenderSystem: public ashley::IteratingSystem {
-private:
-	TCODConsole * const console = nullptr;
+void rgl::DeathSystem::processEntity(ashley::Entity * const &entity, float deltaTime) {
+	MessageHandler::globalHandler->addDeathMessage(entity);
 
-public:
-	explicit MapRenderSystem(TCODConsole * console, int priority) :
-			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(MapRenderable) }), priority), //
-			console { console } {
-	}
-
-	void processEntity(ashley::Entity * const &entity, float deltaTime) override;
-};
-
+	engine->removeEntity(entity);
 }
-
-#endif /* INCLUDE_SYSTEMS_MAPRENDERSYSTEM_HPP_ */

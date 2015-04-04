@@ -43,8 +43,9 @@ private:
 	TCODConsole * const console;
 
 public:
-	explicit RenderSystem(TCODConsole * console) :
-			IteratingSystem(ashley::Family::getFor( { typeid(Renderable), typeid(Position) }), 500000u), console { console } {
+	explicit RenderSystem(TCODConsole * console, int priority = 500000) :
+			IteratingSystem(ashley::Family::getFor( { typeid(Renderable), typeid(Position) }), priority), //
+			console { console } {
 	}
 
 	virtual void processEntity(ashley::Entity * const &entity, float deltaTime) override;

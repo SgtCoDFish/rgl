@@ -40,7 +40,7 @@ private:
 	std::vector<Attack> attacks;
 
 public:
-	explicit BattleSystem(int priority = 0) :
+	explicit BattleSystem(int priority) :
 			EntitySystem(priority) {
 	}
 
@@ -51,7 +51,7 @@ public:
 	void update(float deltaTime) override;
 
 	void addAttack(const Attack &attack) {
-		attacks.push_back(attack);
+		attacks.push_back(Attack(attack));
 	}
 };
 

@@ -40,7 +40,7 @@ public:
 	ashley::Entity * const from;
 	ashley::Entity * const against;
 
-	explicit Attack(ashley::Entity * const from, ashley::Entity  * const against) :
+	explicit Attack(ashley::Entity * const from, ashley::Entity * const against) :
 			from { from }, against { against } {
 	}
 };

@@ -1,5 +1,5 @@
 /*
- * MapRenderSystem.hpp
+ * DeathSystem.hpp
  *
  * The MIT License (MIT)
  *
@@ -24,29 +24,42 @@
  * SOFTWARE.
  */
 
-#ifndef INCLUDE_SYSTEMS_MAPRENDERSYSTEM_HPP_
-#define INCLUDE_SYSTEMS_MAPRENDERSYSTEM_HPP_
+#ifndef INCLUDE_SYSTEMS_DEATHSYSTEM_HPP_
+#define INCLUDE_SYSTEMS_DEATHSYSTEM_HPP_
+
+#include <typeinfo>
 
 #include <Ashley/systems/IteratingSystem.hpp>
-#include <components/MapRenderable.hpp>
+#include <Ashley/core/Family.hpp>
+#include <Ashley/core/Entity.hpp>
+#include <Ashley/core/Engine.hpp>
 
-#include "components/Position.hpp"
+#include "components/DeathMarker.hpp"
 
 namespace rgl {
 
-class MapRenderSystem: public ashley::IteratingSystem {
+class DeathSystem: public ashley::IteratingSystem {
 private:
-	TCODConsole * const console = nullptr;
+	ashley::Engine *engine = nullptr;
 
 public:
-	explicit MapRenderSystem(TCODConsole * console, int priority) :
-			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(MapRenderable) }), priority), //
-			console { console } {
+	explicit DeathSystem(int priority) :
+			IteratingSystem(ashley::Family::getFor( { typeid(DeathMarker) }), priority) {
 	}
 
-	void processEntity(ashley::Entity * const &entity, float deltaTime) override;
+	void addedToEngine(ashley::Engine &engine) override {
+		IteratingSystem::addedToEngine(engine);
+		this->engine = &engine;
+	}
+
+	void removedFromEngine(ashley::Engine &engine) override {
+		IteratingSystem::removedFromEngine(engine);
+		this->engine = nullptr;
+	}
+
+	void processEntity(ashley::Entity * const &, float) override;
 };
 
 }
 
-#endif /* INCLUDE_SYSTEMS_MAPRENDERSYSTEM_HPP_ */
+#endif /* INCLUDE_SYSTEMS_DEATHSYSTEM_HPP_ */
