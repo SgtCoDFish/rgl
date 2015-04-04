@@ -37,6 +37,7 @@
 
 #include "Map.hpp"
 #include "Message.hpp"
+#include "MenuManager.hpp"
 
 namespace rgl {
 
@@ -55,6 +56,8 @@ private:
 
 	MessageHandler messageHandler;
 
+	MenuManager menuManager;
+
 	void renderHUD();
 
 public:
@@ -66,7 +69,8 @@ public:
 			windowTitle { windowTitle }, //
 			engine { }, //
 			map { CONSOLE_WIDTH, CONSOLE_HEIGHT - STATUS_BAR_HEIGHT - 1 }, //
-			messageHandler { nullptr, CONSOLE_WIDTH / 2, CONSOLE_HEIGHT - 6, 6 } //
+			messageHandler { nullptr, CONSOLE_WIDTH / 2, CONSOLE_HEIGHT - 6, 6 }, //
+			menuManager {CONSOLE_WIDTH, CONSOLE_HEIGHT} //
 	{
 		TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_GLSL);
 		messageHandler.setConsole(TCODConsole::root);

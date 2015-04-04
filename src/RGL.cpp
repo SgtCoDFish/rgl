@@ -124,6 +124,7 @@ void rgl::RGL::update(float deltaTime) {
 	engine.update(deltaTime);
 	renderHUD();
 	messageHandler.render();
+	menuManager.renderInventory(player, TCODConsole::root, 0, 0);
 	TCODConsole::root->flush();
 }
 
