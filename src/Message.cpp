@@ -24,6 +24,12 @@
  * SOFTWARE.
  */
 
+#include <cctype>
+
+#include <string>
+#include <sstream>
+#include <array>
+
 #include <Ashley/core/ComponentMapper.hpp>
 #include <Ashley/core/Entity.hpp>
 
@@ -33,7 +39,9 @@
 #include "Message.hpp"
 
 void rgl::MessageHandler::addMessage(const Message &message) {
-	messages.push_back(message);
+	std::string capMsg = message.message;
+	capMsg[0] = std::toupper(capMsg[0]);
+	messages.emplace_back(Message(message.priority, capMsg));
 }
 
 void rgl::MessageHandler::addObtainedMessage(const std::string &itemObtained) {
@@ -49,7 +57,7 @@ void rgl::MessageHandler::addObtainedMessage(const std::string &itemObtained) {
 
 	ss << " " << itemObtained;
 
-	messages.emplace_back(ss.str());
+	addMessage(ss.str());
 }
 
 void rgl::MessageHandler::addAttackMessage(const Attack &attack, int damage) {
@@ -63,7 +71,8 @@ void rgl::MessageHandler::addAttackMessage(const Attack &attack, int damage) {
 	const std::string aName = (againstNamed == nullptr ? "somebody else" : againstNamed->name);
 
 	ss << fName << " smites " << aName << " for " << damage << " damage!";
-	messages.emplace_back(ss.str());
+
+	addMessage(ss.str());
 }
 
 void rgl::MessageHandler::addRetaliationAttackMessage(const Attack &attack, int damage) {
@@ -79,7 +88,8 @@ void rgl::MessageHandler::addRetaliationAttackMessage(const Attack &attack, int 
 	const std::string aName = (againstNamed == nullptr ? "Somebody else" : againstNamed->name);
 
 	ss << aName << " retaliates against " << fName << " for " << damage << " damage!";
-	messages.emplace_back(ss.str());
+
+	addMessage(ss.str());
 }
 
 void rgl::MessageHandler::addDeathMessage(ashley::Entity * const entity) {
@@ -90,7 +100,7 @@ void rgl::MessageHandler::addDeathMessage(ashley::Entity * const entity) {
 	std::stringstream ss;
 	ss << name << "'s lifeless form fades into the aether.";
 
-	messages.emplace_back(ss.str());
+	addMessage(ss.str());
 }
 
 void rgl::MessageHandler::render() const {

@@ -108,7 +108,7 @@ void rgl::RGL::init() {
 	tiger->add<Inventory>(Item("Tiger Skin", ItemType::CRAFTING, CraftingGroup::SKIN));
 	tiger->add<Interactible>(InteractionType::FIGHT);
 	tiger->add<Battling>(Stats(4, 2, 1, 1));
-	tiger->add<Named>("Tony");
+	tiger->add<Named>("tiger", NameType::SPECIES);
 	map.registerTileContents(tiger);
 
 	player = engine.addEntity();
