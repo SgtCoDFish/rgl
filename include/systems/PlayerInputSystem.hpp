@@ -37,16 +37,23 @@ namespace rgl {
 
 class Map;
 class BattleSystem;
+class MenuManager;
+
+// player input system mode
+enum class PISMode {
+	REGULAR, IN_MENU
+};
 
 class PlayerInputSystem: public ashley::IteratingSystem {
 private:
 	// remember to update resetPressedKeys too
 	bool upPressed = false, downPressed = false, leftPressed = false, rightPressed = false, spacePressed = false;
-	bool yPressed = false, nPressed = false;
-	bool f5Pressed = false;
+	bool yPressed = false, nPressed = false, iPressed = false, pPressed = false;
+	bool f5Pressed = false, escPressed = false;
 
 	void resetPressedKeys() {
-		upPressed = downPressed = leftPressed = rightPressed = spacePressed = yPressed = nPressed = f5Pressed = false;
+		upPressed = downPressed = leftPressed = rightPressed = spacePressed = yPressed = nPressed = iPressed =
+		        pPressed = f5Pressed = escPressed = false;
 	}
 
 	inline void processNormalState(ashley::Entity * const &entity, float deltaTime,
@@ -56,12 +63,18 @@ private:
 	inline void processRespondingState(ashley::Entity * const &entity, float deltaTime,
 	        PlayerInputListener * const listener);
 
+	PISMode mode;
+
 	Map *map = nullptr;
 	BattleSystem *battleSystem = nullptr;
+	MenuManager *menuManager = nullptr;
 public:
-	explicit PlayerInputSystem(Map *map, BattleSystem * const battleSystem, int priority) :
-			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(PlayerInputListener) }), priority), map(
-			        map), battleSystem { battleSystem } {
+	explicit PlayerInputSystem(Map *map, BattleSystem * const battleSystem, MenuManager *menuManager, int priority) :
+			IteratingSystem(ashley::Family::getFor( { typeid(Position), typeid(PlayerInputListener) }), priority), //
+			mode { PISMode::REGULAR }, //
+			map { map }, //
+			battleSystem { battleSystem }, //
+			menuManager { menuManager } {
 	}
 
 	void update(float deltaTime) override;

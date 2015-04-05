@@ -113,7 +113,7 @@ void rgl::RGL::init() {
 	mapComponent->add<MapRenderable>(map);
 
 	battleSystem = engine.addSystem<BattleSystem>(1000);
-	engine.addSystem<PlayerInputSystem>(&map, battleSystem, 0);
+	engine.addSystem<PlayerInputSystem>(&map, battleSystem, &menuManager, 0);
 	engine.addSystem<DeathSystem>(5000);
 	mapRenderSystem = engine.addSystem<MapRenderSystem>(TCODConsole::root, 100000);
 	renderSystem = engine.addSystem<RenderSystem>(TCODConsole::root, 500000);
@@ -124,7 +124,7 @@ void rgl::RGL::update(float deltaTime) {
 	engine.update(deltaTime);
 	renderHUD();
 	messageHandler.render();
-	menuManager.renderInventory(player, TCODConsole::root, 0, 0);
+	menuManager.render(TCODConsole::root);
 	TCODConsole::root->flush();
 }
 

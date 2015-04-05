@@ -46,37 +46,85 @@
 void rgl::PlayerInputSystem::processEntity(ashley::Entity * const &entity, float deltaTime) {
 	const auto inputComponent = ashley::ComponentMapper<PlayerInputListener>::getMapper().get(entity);
 
-	if (f5Pressed) {
-		const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(entity);
+	switch (mode) {
+	case PISMode::REGULAR: {
+		if (iPressed) {
+			menuManager->pushInventoryMenu(entity);
+			mode = PISMode::IN_MENU;
+			break;
+		} else if (pPressed) {
+			menuManager->pushPlayerMenu(entity);
+			mode = PISMode::IN_MENU;
+			break;
+		}
 
-		if (inventory != nullptr) {
-			for (const auto &item : inventory->contents) {
-				RGLL->debug("Player has: %v", item.name);
+		switch (inputComponent->state) {
+		case PlayerInputState::NORMAL: {
+			processNormalState(entity, deltaTime, inputComponent);
+			break;
+		}
+
+		case PlayerInputState::TARGETTING: {
+			processTargettingState(entity, deltaTime, inputComponent);
+			break;
+		}
+
+		case PlayerInputState::RESPONDING: {
+			processRespondingState(entity, deltaTime, inputComponent);
+			break;
+		}
+
+		default: {
+			RGLL->debug("Unhandled case in PlayerInputSystem switch.");
+			break;
+		}
+		break;
+	}
+
+		break;
+	}
+
+	case PISMode::IN_MENU: {
+		bool closePressed = escPressed;
+		const auto topMenu = menuManager->getTopMenu();
+		if (topMenu != nullptr) {
+			switch (topMenu->type) {
+			case MenuType::INVENTORY: {
+				if (iPressed) {
+					closePressed = true;
+					break;
+				}
+			}
+
+			case MenuType::PLAYER_DETAILS: {
+				if (pPressed) {
+					closePressed = true;
+					break;
+				}
+			}
+
+			case MenuType::EQUIPMENT: {
+				// NYI
+				break;
+			}
+
+			case MenuType::ITEM_DETAILS: {
+				// NYI
+				break;
+			}
+			}
+		} else {
+			closePressed = true;
+		}
+
+		if (closePressed) {
+			if (menuManager->popMenu()) {
+				mode = PISMode::REGULAR;
 			}
 		}
-	}
-
-	switch (inputComponent->state) {
-	case PlayerInputState::NORMAL: {
-		processNormalState(entity, deltaTime, inputComponent);
 		break;
 	}
-
-	case PlayerInputState::TARGETTING: {
-		processTargettingState(entity, deltaTime, inputComponent);
-		break;
 	}
-
-	case PlayerInputState::RESPONDING: {
-		processRespondingState(entity, deltaTime, inputComponent);
-		break;
-	}
-
-	default: {
-		RGLL->debug("Unhandled case in PlayerInputSystem switch.");
-		break;
-	}
-}
 }
 
 void rgl::PlayerInputSystem::processNormalState(ashley::Entity * const &entity, float deltaTime,
@@ -291,6 +339,18 @@ void rgl::PlayerInputSystem::update(float deltaTime) {
 				break;
 			}
 
+			case 'i':
+			case 'I': {
+				iPressed = true;
+				break;
+			}
+
+			case 'p':
+			case 'P': {
+				pPressed = true;
+				break;
+			}
+
 			default: {
 				break;
 			}
@@ -325,6 +385,11 @@ void rgl::PlayerInputSystem::update(float deltaTime) {
 
 		case TCODK_F5: {
 			f5Pressed = true;
+			break;
+		}
+
+		case TCODK_ESCAPE: {
+			escPressed = true;
 			break;
 		}
 
