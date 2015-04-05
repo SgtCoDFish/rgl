@@ -27,11 +27,29 @@
 #ifndef __INCLUDE_CRAFTING_HPP
 #define __INCLUDE_CRAFTING_HPP
 
+#include <vector>
+#include <initializer_list>
+
+#include "Item.hpp"
+
 namespace rgl {
+
+class RecipeComponent {
+public:
+	const ItemType type;
+
+	explicit RecipeComponent(const ItemType type) :
+			type { type } {
+	}
+};
 
 class CraftingRecipe {
 public:
-	explicit CraftingRecipe();
+	const std::vector<RecipeComponent> components;
+
+	explicit CraftingRecipe(std::initializer_list<RecipeComponent> components) :
+			components { components } {
+	}
 };
 
 }

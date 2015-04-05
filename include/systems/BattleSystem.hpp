@@ -33,11 +33,17 @@
 
 #include "Attack.hpp"
 
+namespace ashley {
+class Entity;
+}
+
 namespace rgl {
 
 class BattleSystem: public ashley::EntitySystem {
 private:
 	std::vector<Attack> attacks;
+
+	void handleDeath(ashley::Entity * const entity) const;
 
 public:
 	explicit BattleSystem(int priority) :

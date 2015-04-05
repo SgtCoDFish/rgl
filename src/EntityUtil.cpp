@@ -59,7 +59,7 @@ ashley::Entity *rgl::EntityUtil::generateChestEntity(ashley::Engine &engine, int
 
 	e->add<Position>(x, y);
 	e->add<Renderable>('#', TCODColor::copper);
-	e->add<Interactible>(InteractionType::LOOT);
+	e->add<Interactible>(InteractionType::LOOT_CHEST);
 	e->add<Inventory>();
 	ashley::ComponentMapper<Inventory>::getMapper().get(e)->contents.emplace_back(item);
 

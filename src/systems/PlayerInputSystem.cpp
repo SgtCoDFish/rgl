@@ -36,6 +36,7 @@
 #include "components/Inventory.hpp"
 #include "components/Interactible.hpp"
 #include "components/Battling.hpp"
+#include "components/DeathMarker.hpp"
 
 #include "systems/PlayerInputSystem.hpp"
 
@@ -192,8 +193,14 @@ void rgl::PlayerInputSystem::processTargettingState(ashley::Entity * const &enti
 					listener->choice = e;
 
 					switch (interactible->type) {
-					case InteractionType::LOOT: {
+					case InteractionType::LOOT_CHEST: {
 						MessageHandler::globalHandler->addMessage("There's a chest here; open it? (Y/N)");
+						listener->state = PlayerInputState::RESPONDING;
+						return;
+					}
+
+					case InteractionType::LOOT_CORPSE: {
+						MessageHandler::globalHandler->addMessage("Loot the corpse? (Y/N)");
 						listener->state = PlayerInputState::RESPONDING;
 						return;
 					}
@@ -246,7 +253,8 @@ void rgl::PlayerInputSystem::processRespondingState(ashley::Entity * const &enti
 				const auto interactible = ashley::ComponentMapper<Interactible>::getMapper().get(listener->choice);
 
 				switch (interactible->type) {
-				case InteractionType::LOOT: {
+				case InteractionType::LOOT_CORPSE:
+				case InteractionType::LOOT_CHEST: {
 					const auto inventory = ashley::ComponentMapper<Inventory>::getMapper().get(listener->choice);
 
 					if (inventory == nullptr || inventory->contents.empty()) {
@@ -263,6 +271,10 @@ void rgl::PlayerInputSystem::processRespondingState(ashley::Entity * const &enti
 
 							inventory->contents.clear();
 						}
+					}
+
+					if(interactible->type == InteractionType::LOOT_CORPSE) {
+						listener->choice->add<DeathMarker>();
 					}
 
 					break;

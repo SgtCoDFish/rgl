@@ -32,7 +32,7 @@
 namespace rgl {
 
 enum class InteractionType {
-	TALK, FIGHT, LOOT
+	TALK, FIGHT, LOOT_CHEST, LOOT_CORPSE
 };
 
 class Interactible: public ashley::Component {
