@@ -88,7 +88,7 @@ void rgl::Menu::renderInventory(TCODConsole *target, int targetX, int targetY) {
 	}
 
 	if (inventory->contents.empty()) {
-		console->print(3, 5, "Empty :(");
+		console->print(3, 5, "Empty");
 	} else {
 		for (int i = 0; i < (int) inventory->contents.size(); ++i) {
 			console->print(3, 5 + i, "%d: %s", i + 1, inventory->contents[i].name.c_str());
