@@ -91,7 +91,10 @@ void rgl::Menu::renderInventory(TCODConsole *target, int targetX, int targetY) {
 		console->print(3, 5, "Empty");
 	} else {
 		for (int i = 0; i < (int) inventory->contents.size(); ++i) {
-			console->print(3, 5 + i, "%d: %s", i + 1, inventory->contents[i].name.c_str());
+			const auto &item = inventory->contents[i];
+			const char *augmentString = (item.isAugmented() ? " *" : "");
+
+			console->print(3, 5 + i, "%d: %s%s", i + 1, item.name.c_str(), augmentString);
 		}
 	}
 

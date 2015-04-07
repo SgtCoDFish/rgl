@@ -49,16 +49,6 @@ void rgl::PlayerInputSystem::processEntity(ashley::Entity * const &entity, float
 
 	switch (mode) {
 	case PISMode::REGULAR: {
-		if (iPressed) {
-			menuManager->pushInventoryMenu(entity);
-			mode = PISMode::IN_MENU;
-			break;
-		} else if (pPressed) {
-			menuManager->pushPlayerMenu(entity);
-			mode = PISMode::IN_MENU;
-			break;
-		}
-
 		switch (inputComponent->state) {
 		case PlayerInputState::NORMAL: {
 			processNormalState(entity, deltaTime, inputComponent);
@@ -82,14 +72,14 @@ void rgl::PlayerInputSystem::processEntity(ashley::Entity * const &entity, float
 		break;
 	}
 
-		break;
-	}
+	break;
+}
 
-	case PISMode::IN_MENU: {
-		bool closePressed = escPressed;
-		const auto topMenu = menuManager->getTopMenu();
-		if (topMenu != nullptr) {
-			switch (topMenu->type) {
+case PISMode::IN_MENU: {
+	bool closePressed = escPressed;
+	const auto topMenu = menuManager->getTopMenu();
+	if (topMenu != nullptr) {
+		switch (topMenu->type) {
 			case MenuType::INVENTORY: {
 				if (iPressed) {
 					closePressed = true;
@@ -113,25 +103,35 @@ void rgl::PlayerInputSystem::processEntity(ashley::Entity * const &entity, float
 				// NYI
 				break;
 			}
-			}
-		} else {
-			closePressed = true;
 		}
+	} else {
+		closePressed = true;
+	}
 
-		if (closePressed) {
-			if (menuManager->popMenu()) {
-				mode = PISMode::REGULAR;
-			}
+	if (closePressed) {
+		if (menuManager->popMenu()) {
+			mode = PISMode::REGULAR;
 		}
-		break;
 	}
-	}
+	break;
+}
+}
 }
 
 void rgl::PlayerInputSystem::processNormalState(ashley::Entity * const &entity, float deltaTime,
         PlayerInputListener * const listener) {
 	const auto pos = ashley::ComponentMapper<Position>::getMapper().get(entity);
 	glm::ivec2 target(pos->position);
+
+	if (iPressed) {
+		menuManager->pushInventoryMenu(entity);
+		mode = PISMode::IN_MENU;
+		return;
+	} else if (pPressed) {
+		menuManager->pushPlayerMenu(entity);
+		mode = PISMode::IN_MENU;
+		return;
+	}
 
 	if (spacePressed) {
 		listener->state = PlayerInputState::TARGETTING;
@@ -273,7 +273,7 @@ void rgl::PlayerInputSystem::processRespondingState(ashley::Entity * const &enti
 						}
 					}
 
-					if(interactible->type == InteractionType::LOOT_CORPSE) {
+					if (interactible->type == InteractionType::LOOT_CORPSE) {
 						listener->choice->add<DeathMarker>();
 					}
 

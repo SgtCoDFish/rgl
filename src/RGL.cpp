@@ -92,8 +92,13 @@ void rgl::RGL::init() {
 			RGLL->debug("Invalid chest generated at (%v, %v).", chestX, chestY);
 		}
 
-		auto chest = EntityUtil::generateChestEntity(engine, chestX, chestY,
-		        Item(names[i], ItemType::WEAPON, Stats(10, 2, 2)));
+		auto item = Item(names[i], ItemType::WEAPON, Stats(10, 5 - i + 1, 2));
+
+		if (i == 0) {
+			item.applyAugment(Augment("Yendor's Boon", Stats(1, 2, 3, 0)));
+		}
+
+		auto chest = EntityUtil::generateChestEntity(engine, chestX, chestY, item);
 
 		map.registerTileContents(chest);
 	}

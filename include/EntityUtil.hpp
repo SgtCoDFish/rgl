@@ -32,7 +32,7 @@ class Entity;
 }
 
 namespace rgl {
-struct Item;
+class Item;
 
 class EntityUtil {
 public:
