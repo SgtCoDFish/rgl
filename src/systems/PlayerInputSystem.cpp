@@ -44,6 +44,8 @@
 #include "Map.hpp"
 #include "Message.hpp"
 
+#include "easylogging++.h"
+
 void rgl::PlayerInputSystem::processEntity(ashley::Entity * const &entity, float deltaTime) {
 	const auto inputComponent = ashley::ComponentMapper<PlayerInputListener>::getMapper().get(entity);
 
@@ -103,7 +105,13 @@ case PISMode::IN_MENU: {
 				// NYI
 				break;
 			}
+
+			case MenuType::YES_NO: {
+				RGLL->debug("We shouldn't get here: YES_NO topMenu->type");
+				break;
+			}
 		}
+
 	} else {
 		closePressed = true;
 	}
@@ -194,13 +202,13 @@ void rgl::PlayerInputSystem::processTargettingState(ashley::Entity * const &enti
 
 					switch (interactible->type) {
 					case InteractionType::LOOT_CHEST: {
-						MessageHandler::globalHandler->addMessage("There's a chest here; open it? (Y/N)");
+						menuManager->pushYesNoMenu("There's a chest here. Open it? (Y/N)");
 						listener->state = PlayerInputState::RESPONDING;
 						return;
 					}
 
 					case InteractionType::LOOT_CORPSE: {
-						MessageHandler::globalHandler->addMessage("Loot the corpse? (Y/N)");
+						menuManager->pushYesNoMenu("Loot the corpse? (Y/N)");
 						listener->state = PlayerInputState::RESPONDING;
 						return;
 					}
@@ -302,6 +310,7 @@ void rgl::PlayerInputSystem::processRespondingState(ashley::Entity * const &enti
 			MessageHandler::globalHandler->addMessage("Never mind.");
 		}
 
+		menuManager->popMenu();
 		listener->state = PlayerInputState::NORMAL;
 		listener->target.x = -1;
 		listener->target.y = -1;

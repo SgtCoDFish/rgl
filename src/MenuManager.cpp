@@ -67,6 +67,14 @@ void rgl::Menu::render(TCODConsole *target, int x, int y) {
 		RGLL->debug("Equipment menu NYI.");
 		break;
 	}
+
+	case MenuType::YES_NO: {
+		renderYesNo(target, x, y);
+		break;
+	}
+
+	default:
+	break;
 }
 }
 
@@ -136,6 +144,16 @@ void rgl::Menu::renderPlayerDetails(TCODConsole *target, int targetX, int target
 	TCODConsole::blit(console.get(), 0, 0, console->getWidth(), console->getHeight(), target, targetX, targetY);
 }
 
+void rgl::Menu::renderYesNo(TCODConsole *target, int targetX, int targetY) {
+	if((int)title.length() > console->getWidth()) {
+		// split
+	}
+
+	console->print(0, 0, "%s", title.c_str());
+
+	TCODConsole::blit(console.get(), 0, 0, console->getWidth(), console->getHeight(), target, targetX, targetY);
+}
+
 void rgl::Menu::renderRect(TCODConsole *console, int x, int y, int w, int h) {
 	console->hline(x, y, w + 1);
 	console->hline(x, y + h, w + 1);
@@ -169,13 +187,17 @@ void rgl::MenuManager::pushMenu(Menu &&menu) {
 void rgl::MenuManager::pushPlayerMenu(ashley::Entity *entity) {
 	const auto name = ashley::ComponentMapper<Named>::getMapper().get(entity)->name;
 
-	menus.emplace_back(Menu(name, maxWidth / 3, maxHeight / 2, MenuType::PLAYER_DETAILS, entity));
+	menus.emplace_back(name, maxWidth / 3, maxHeight / 2, MenuType::PLAYER_DETAILS, entity);
 }
 
 void rgl::MenuManager::pushInventoryMenu(ashley::Entity * entity) {
 	const auto nameStr = ashley::ComponentMapper<Named>::getMapper().get(entity)->name + "'s Inventory";
 
-	menus.emplace_back(Menu(nameStr, maxWidth / 3, maxHeight / 2, MenuType::INVENTORY, entity));
+	menus.emplace_back(nameStr, maxWidth / 3, maxHeight / 2, MenuType::INVENTORY, entity);
+}
+
+void rgl::MenuManager::pushYesNoMenu(const std::string &question) {
+	menus.emplace_back(question, maxWidth / 3, maxHeight / 2, MenuType::YES_NO, nullptr);
 }
 
 bool rgl::MenuManager::popMenu() {

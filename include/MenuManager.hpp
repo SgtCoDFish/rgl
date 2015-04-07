@@ -38,7 +38,7 @@ class Entity;
 
 namespace rgl {
 enum class MenuType {
-	INVENTORY, PLAYER_DETAILS, EQUIPMENT, ITEM_DETAILS
+	INVENTORY, PLAYER_DETAILS, EQUIPMENT, ITEM_DETAILS, YES_NO
 };
 
 class Menu {
@@ -49,6 +49,7 @@ private:
 
 	void renderInventory(TCODConsole * target, int targetX, int targetY);
 	void renderPlayerDetails(TCODConsole *target, int targetX, int targetY);
+	void renderYesNo(TCODConsole *target, int targetX, int targetY);
 
 public:
 	const std::string title;
@@ -78,6 +79,7 @@ public:
 
 	void pushPlayerMenu(ashley::Entity *entity);
 	void pushInventoryMenu(ashley::Entity * entity);
+	void pushYesNoMenu(const std::string &question);
 
 	// return true if no menus left.
 	bool popMenu();
