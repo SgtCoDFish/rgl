@@ -268,7 +268,10 @@ void rgl::PlayerInputSystem::processRespondingState(ashley::Entity * const &enti
 					if (inventory == nullptr || inventory->contents.empty()) {
 						MessageHandler::globalHandler->addMessage("Seems to be empty...");
 					} else {
-						MessageHandler::globalHandler->addMessage("The chest creaks open.");
+						if (interactible->type == InteractionType::LOOT_CHEST) {
+							MessageHandler::globalHandler->addMessage("The chest creaks open.");
+						}
+
 						const auto playerInventory = ashley::ComponentMapper<Inventory>::getMapper().get(entity);
 
 						if (playerInventory != nullptr) {

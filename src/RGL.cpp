@@ -104,6 +104,7 @@ void rgl::RGL::init() {
 	}
 
 	map.registerTileContents(EntityUtil::generateTigerEntity(engine, room.x1 + 1, room.y1 + 1));
+	map.registerTileContents(EntityUtil::generateSabretoothEntity(engine, room.x2 - 1, room.y2 - 1));
 
 	player = engine.addEntity();
 	player->add<Position>(room.x1 + (room.w / 2), room.y1 + (room.h / 2));
