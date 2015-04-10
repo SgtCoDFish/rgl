@@ -54,6 +54,19 @@ ashley::Entity *rgl::EntityUtil::generateTigerEntity(ashley::Engine &engine, int
 	return e;
 }
 
+ashley::Entity *rgl::EntityUtil::generateSabretoothEntity(ashley::Engine &engine, int x, int y) {
+	const auto e = engine.addEntity();
+
+	e->add<Position>(x, y);
+	e->add<Renderable>('T', TCODColor::red);
+	e->add<Inventory>(Item("Sabretooth Skin", ItemType::CRAFTING, CraftingGroup::SKIN));
+	e->add<Interactible>(InteractionType::FIGHT);
+	e->add<Battling>(Stats(10, 2, 0, 2));
+	e->add<Named>("sabretooth", NameType::SPECIES);
+
+	return e;
+}
+
 ashley::Entity *rgl::EntityUtil::generateChestEntity(ashley::Engine &engine, int x, int y, const Item &item) {
 	const auto e = engine.addEntity();
 
