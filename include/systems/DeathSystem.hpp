@@ -57,7 +57,7 @@ public:
 		this->engine = nullptr;
 	}
 
-	void processEntity(ashley::Entity * const &, float) override;
+	void processEntity(ashley::Entity * const, float) override;
 };
 
 }

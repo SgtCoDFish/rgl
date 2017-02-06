@@ -23,11 +23,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include <Ashley/AshleyCore.hpp>
+#include <Ashley/Ashley.hpp>
 
 #include "systems/MapRenderSystem.hpp"
 
-void rgl::MapRenderSystem::processEntity(ashley::Entity * const &entity, float deltaTime) {
+void rgl::MapRenderSystem::processEntity(ashley::Entity * const entity, float deltaTime) {
 	const auto mapComponent = ashley::ComponentMapper<MapRenderable>::getMapper().get(entity);
 
 	for (int y = 0; y < mapComponent->map.getHeight(); ++y) {

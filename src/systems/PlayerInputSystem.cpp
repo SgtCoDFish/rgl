@@ -46,7 +46,7 @@
 
 #include "easylogging++.h"
 
-void rgl::PlayerInputSystem::processEntity(ashley::Entity * const &entity, float deltaTime) {
+void rgl::PlayerInputSystem::processEntity(ashley::Entity * const entity, float deltaTime) {
 	const auto inputComponent = ashley::ComponentMapper<PlayerInputListener>::getMapper().get(entity);
 
 	switch (mode) {

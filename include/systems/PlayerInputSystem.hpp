@@ -78,7 +78,7 @@ public:
 	}
 
 	void update(float deltaTime) override;
-	virtual void processEntity(ashley::Entity * const &entity, float deltaTime) override;
+	virtual void processEntity(ashley::Entity * const entity, float deltaTime) override;
 
 	void setMap(Map *map) {
 		this->map = map;

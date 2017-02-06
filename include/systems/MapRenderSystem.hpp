@@ -44,7 +44,7 @@ public:
 			console { console } {
 	}
 
-	void processEntity(ashley::Entity * const &entity, float deltaTime) override;
+	void processEntity(ashley::Entity * const entity, float deltaTime) override;
 };
 
 }

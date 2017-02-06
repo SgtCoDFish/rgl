@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-#include <Ashley/AshleyCore.hpp>
+#include <Ashley/Ashley.hpp>
 
 #include "libtcod.hpp"
 

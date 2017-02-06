@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 
-#include <Ashley/AshleyCore.hpp>
+#include <Ashley/Ashley.hpp>
 
 #include "libtcod.hpp"
 

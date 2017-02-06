@@ -48,7 +48,7 @@ public:
 			console { console } {
 	}
 
-	virtual void processEntity(ashley::Entity * const &entity, float deltaTime) override;
+	virtual void processEntity(ashley::Entity * const entity, float deltaTime) override;
 };
 
 }
