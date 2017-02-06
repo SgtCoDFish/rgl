@@ -72,7 +72,7 @@ public:
 			messageHandler { nullptr, CONSOLE_WIDTH / 2, CONSOLE_HEIGHT - 6, 6 }, //
 			menuManager {CONSOLE_WIDTH, CONSOLE_HEIGHT} //
 	{
-		TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_GLSL);
+		TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_SDL);
 		messageHandler.setConsole(TCODConsole::root);
 	}
 
