@@ -350,7 +350,7 @@
 #   include <thread>
 #   include <queue>
 #   include <condition_variable>
-#endif  // ELPP_ASYNC_LOGGING 
+#endif  // ELPP_ASYNC_LOGGING
 #if defined(ELPP_STL_LOGGING)
 // For logging STL based templates
 #   include <list>
@@ -1998,7 +1998,7 @@ private:
 /// @brief A pointer registry mechanism to manage memory and provide search functionalities. (non-predicate version)
 ///
 /// @detail NOTE: This is thread-unsafe implementation (although it contains lock function, it does not use these functions)
-///         of AbstractRegistry<T_Ptr, Container>. Any implementation of this class should be  
+///         of AbstractRegistry<T_Ptr, Container>. Any implementation of this class should be
 ///         explicitly (by using lock functions)
 template<typename T_Ptr, typename T_Key = const char*>
 class Registry: public AbstractRegistry<T_Ptr, std::map<T_Key, T_Ptr*>> {
@@ -3920,7 +3920,7 @@ public:
 	LogMessage(Level level, const std::string& file, unsigned long int line, const std::string& func,
 	        base::type::VerboseLevel verboseLevel, Logger* logger) :
 			m_level(level), m_file(file), m_line(line), m_func(func), m_verboseLevel(verboseLevel), m_logger(logger), m_message(
-			        std::move(logger->stream().str())) {
+			        logger->stream().str()) {
 	}
 	inline Level level(void) const {
 		return m_level;
@@ -4278,10 +4278,8 @@ class DefaultLogDispatchCallback: public LogDispatchCallback {
 protected:
 	void handle(const LogDispatchData* data) {
 		m_data = data;
-		dispatch(
-		        std::move(
-		                m_data->logMessage()->logger()->logBuilder()->build(m_data->logMessage(),
-		                        m_data->dispatchAction() == base::DispatchAction::NormalLog)));
+		dispatch(m_data->logMessage()->logger()->logBuilder()->build(m_data->logMessage(),
+		                        m_data->dispatchAction() == base::DispatchAction::NormalLog));
 	}
 private:
 	const LogDispatchData* m_data;
@@ -6793,7 +6791,7 @@ static T* checkNotNull(T* ptr, const char* name, const char* loggers, ...) {
 #   define INITIALIZE_EASYLOGGINGPP\
        ELPP_INIT_EASYLOGGINGPP(new el::base::Storage(el::LogBuilderPtr(new el::base::DefaultLogBuilder()),\
                                                           new el::base::AsyncDispatchWorker()))\
-       
+
 #else
 #   define INITIALIZE_EASYLOGGINGPP\
        ELPP_INIT_EASYLOGGINGPP(new el::base::Storage(el::LogBuilderPtr(new el::base::DefaultLogBuilder())))

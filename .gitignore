@@ -1,19 +1,9 @@
-Debug/*
-Debug
-
-Release/*
-Release
-
 include/tcod/*
 include/tcod
 
 .cproject
 .project
 
-lib/*
-lib
-
-Win32/*
-Win32
-
 .settings
+
+build-*/
