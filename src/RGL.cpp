@@ -22,11 +22,21 @@
 #include "systems/BattleSystem.hpp"
 #include "systems/DeathSystem.hpp"
 
-#include "easylogging++.h"
+namespace rgl {
 
 rgl::MessageHandler *rgl::MessageHandler::globalHandler = nullptr;
 
-void rgl::RGL::init() {
+RGL::RGL(const std::string &windowTitle) :
+	windowTitle { windowTitle },
+	engine { },
+	map { CONSOLE_WIDTH, CONSOLE_HEIGHT - STATUS_BAR_HEIGHT - 1 },
+	messageHandler { nullptr, CONSOLE_WIDTH / 2, CONSOLE_HEIGHT - 6, 6 },
+	menuManager {CONSOLE_WIDTH, CONSOLE_HEIGHT} {
+		TCODConsole::initRoot(CONSOLE_WIDTH, CONSOLE_HEIGHT, windowTitle.c_str(), false, TCOD_RENDERER_SDL);
+		messageHandler.setConsole(TCODConsole::root);
+}
+
+void RGL::init() {
 	messageHandler.addMessage("Welcome to RGL!");
 	MessageHandler::globalHandler = &messageHandler;
 	const Room room = map.getRandomRoom();
@@ -62,10 +72,6 @@ void rgl::RGL::init() {
 		const auto chestX = chestRoom->x1 + xNumerator * (chestRoom->w / 4);
 		const auto chestY = chestRoom->y1 + yNumerator * (chestRoom->h / 4);
 
-		if (chestX == 0 && chestY == 0) {
-			RGLL->debug("Invalid chest generated at (%v, %v).", chestX, chestY);
-		}
-
 		auto item = Item(names[i], ItemType::WEAPON, Stats(10, 5 - i + 1, 2));
 
 		if (i == 0) {
@@ -99,7 +105,7 @@ void rgl::RGL::init() {
 	renderSystem = engine.addSystem<RenderSystem>(TCODConsole::root, 500000);
 }
 
-void rgl::RGL::update(float deltaTime) {
+void RGL::update(float deltaTime) {
 	TCODConsole::root->clear();
 	engine.update(deltaTime);
 	renderHUD();
@@ -108,7 +114,7 @@ void rgl::RGL::update(float deltaTime) {
 	TCODConsole::root->flush();
 }
 
-void rgl::RGL::renderHUD() {
+void RGL::renderHUD() {
 	const auto con = TCODConsole::root;
 	static const int msgX = 1;
 
@@ -122,4 +128,6 @@ void rgl::RGL::renderHUD() {
 
 	con->print(msgX, CONSOLE_HEIGHT - 5, "HP: %d/%d", playerStats.hp, playerStats.maxHP);
 	con->print(msgX, CONSOLE_HEIGHT - 3, "Naked");
+}
+
 }

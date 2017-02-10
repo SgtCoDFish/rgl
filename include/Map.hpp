@@ -9,8 +9,6 @@
 
 #include "libtcod.hpp"
 
-#include "easylogging++.h"
-
 #include "components/Position.hpp"
 
 namespace rgl {
@@ -61,17 +59,12 @@ public:
 
 			if (tile != nullptr) {
 				tile->contains.emplace_back(entity);
-			} else {
-				RGLL->debug("Can't place entity at (%v, %v) because the tile doesn't exist.", pos->position.x, pos->position.y);
 			}
-		} else {
-			RGLL->debug("Tried to registerTileContents with entity which has no position");
 		}
 	}
 
 	inline Tile *getTileAt(int x, int y) const {
 		if (x < 0 || x > width || y < 0 || y > height) {
-			RGLL->debug("Invalid call to getTileAt at: (%v, %v)", x, y);
 			return nullptr;
 		}
 

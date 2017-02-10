@@ -18,8 +18,6 @@
 #include "Map.hpp"
 #include "Message.hpp"
 
-#include "easylogging++.h"
-
 void rgl::PlayerInputSystem::processEntity(ashley::Entity * const entity, float deltaTime) {
 	const auto inputComponent = ashley::ComponentMapper<PlayerInputListener>::getMapper().get(entity);
 
@@ -42,7 +40,6 @@ void rgl::PlayerInputSystem::processEntity(ashley::Entity * const entity, float 
 		}
 
 		default: {
-			RGLL->debug("Unhandled case in PlayerInputSystem switch.");
 			break;
 		}
 		break;
@@ -81,7 +78,6 @@ case PISMode::IN_MENU: {
 			}
 
 			case MenuType::YES_NO: {
-				RGLL->debug("We shouldn't get here: YES_NO topMenu->type");
 				break;
 			}
 		}

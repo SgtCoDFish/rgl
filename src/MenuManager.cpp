@@ -13,8 +13,6 @@
 
 #include "MenuManager.hpp"
 
-#include "easylogging++.h"
-
 rgl::Menu::Menu(const std::string &title, int w, int h, MenuType type, ashley::Entity * const entity) :
 		title { title }, type { type }, width { w }, height { h }, entity { entity } {
 	console = std::make_unique<TCODConsole>(w, h);
@@ -33,12 +31,10 @@ void rgl::Menu::render(TCODConsole *target, int x, int y) {
 	}
 
 	case MenuType::ITEM_DETAILS: {
-		RGLL->debug("Item details menu NYI.");
 		break;
 	}
 
 	case MenuType::EQUIPMENT: {
-		RGLL->debug("Equipment menu NYI.");
 		break;
 	}
 

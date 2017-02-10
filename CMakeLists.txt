@@ -25,8 +25,5 @@ configure_file (
 
 set(INITIAL_FLAGS ${CMAKE_CXX_FLAGS_BASE})
 
-if (NOT EXCLUDE_TESTS)
-    include (CTest)
-endif ()
-
 add_subdirectory(src)
+add_subdirectory(curses)
