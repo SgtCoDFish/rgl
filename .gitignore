@@ -6,4 +6,6 @@ include/tcod
 
 .settings
 
+*.swp
+
 build-*/
