@@ -1,5 +1,7 @@
 find_package(SDL2 REQUIRED)
 find_package(AshleyCPP REQUIRED)
+find_package(GLM REQUIRED)
+add_definitions(-DGLM_FORCE_RADIANS)
 
 # TODO: add cmake for finding tcod
 
@@ -52,7 +54,7 @@ else ()
 	endif ()
 endif()
 
-set(LIBS "${SDL2_LIBRARY} ${TCOD_LIBRARIES} ${OS_LIBS}")
+set(LIBS ${SDL2_LIBRARY} ${TCOD_LIBRARIES} ${OS_LIBS})
 
 set(CMAKE_CXX_FLAGS_BASE "${INITIAL_FLAGS} ${dialect} ${warnings} ${flags}")
 
@@ -70,7 +72,8 @@ file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 file(GLOB_RECURSE HEADERS ${PROJECT_SOURCE_DIR}/include/*.hpp)
 
 include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}
-		${SDL2_INCLUDE_DIR} ${AshleyCPP_INCLUDE_DIR} ${TCOD_INCLUDE_DIR})
+		${SDL2_INCLUDE_DIR} ${AshleyCPP_INCLUDE_DIR} ${TCOD_INCLUDE_DIR}
+		${GLM_INCLUDE_DIRS})
 
 set(EXECUTABLE_NAME "rgl")
 message("CXX flags: ${CMAKE_CXX_FLAGS}")

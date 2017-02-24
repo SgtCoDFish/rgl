@@ -26,4 +26,3 @@ configure_file (
 set(INITIAL_FLAGS ${CMAKE_CXX_FLAGS_BASE})
 
 add_subdirectory(src)
-add_subdirectory(curses)
